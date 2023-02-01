@@ -1,4 +1,5 @@
 import socket
+from datetime import date
 
 HOST = "127.0.0.1"
 PORT = 65400
@@ -17,8 +18,21 @@ def init_server():
                     print(data.decode())
                     if (data.decode() == "/exit"):
                         return
-                    if (data.decode() == "/ping"):
+                    elif (data.decode() == "/ping"):
                         conn.sendall(b"pong")
+                    elif(data.decode() == "/help"):
+                        rmsg = """
+==== COMANDOS ====
+    - /help : Muestra los comandos
+    - /exit : Termina la conexión y cierra el servidor.
+    - /ping : Devuelve un mensaje de vuelta
+    - /time : Regresa la hora
+                        """
+                        conn.sendall(rmsg.encode())
+                    elif (data.decode() == "/time"):
+                        today = date.today()
+                        d1 = today.strftime("%d/%m/%y")
+                        conn.sendall(d1.encode())
                     if not data:
                         break
                     conn.sendall(data)
