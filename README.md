@@ -9,7 +9,7 @@ En caso de que no sea un comando , el mensaje aparecera en la terminal del servi
 En caso de que sea un comando, el servidor realizara alguna tarea.
 
 Ejemplos de comandos.
-    - /exit : Termina la conexión y cierra el servidor.
-    - /ping : Devuelve el mensaje "pong" al cliente.
-    - /time : Regresa la hora del servidor al cliente.
-    - /help : Muestra comandos disponibles.
+    * /exit : Termina la conexión y cierra el servidor.
+    * /ping : Devuelve el mensaje "pong" al cliente.
+    * /time : Regresa la hora del servidor al cliente.
+    * /help : Muestra comandos disponibles.
