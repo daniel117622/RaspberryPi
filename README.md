@@ -22,6 +22,7 @@ Ejemplos de comandos.
 
 ===================== C ======================
 </br>
+</br>
 Inicializar server con el comando "g++ server.cpp y ./server"
 
 Después inicializar el cliente con "gcc client.c y ./client"
