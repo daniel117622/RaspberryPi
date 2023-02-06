@@ -21,6 +21,7 @@ Ejemplos de comandos.
     - /help : Muestra comandos disponibles.
 
 ===================== C ======================
+</br>
 Inicializar server con el comando "g++ server.cpp y ./server"
 
 Después inicializar el cliente con "gcc client.c y ./client"
