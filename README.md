@@ -1,5 +1,7 @@
 Guia de uso
 
+===================== PYTHON ======================
+
 Inicializar server con el comando "python server.py"
 
 Después inicializar el cliente con "python client.py"
@@ -17,3 +19,12 @@ Ejemplos de comandos.
     - /time : Regresa la hora del servidor al cliente.
     </br>
     - /help : Muestra comandos disponibles.
+
+===================== C ======================
+Inicializar server con el comando "g++ server.cpp y ./server"
+
+Después inicializar el cliente con "gcc client.c y ./client"
+
+Una vez inicializado el servidor y compilado el archivo del cliente, 
+se detallara en pantalla que la conexión fue establecida, posteriormente a esto, 
+el cliente puede enviar un string al servidor.
