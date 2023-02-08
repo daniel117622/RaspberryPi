@@ -13,10 +13,19 @@
 #define PORT 64001
 
 #include "tcp.h"
+#include "json.h"
+
+#include <list>
+#include <iterator>
+
 
 int main(int* argc, int** argv)
 {
     std::cout<<"Hola mundo"<<std::endl;
+
+    list<GenericData> c1,c2,c3;
+    
+    
 
     TcpSocket t1(64001);
     t1.Listen();

@@ -18,11 +18,14 @@ class GenericData
         float gyro_y;
         float gyro_z;
 
+        unsigned int _time;
+
         bool is_valid;
     public:
-        GenericData(std::string tipo,float v)
+        GenericData(unsigned int time,std::string tipo,float v)
         {
             this->_type = tipo;
+            this->_time = time;
             if (tipo.compare("magnetometer"))
             {
                 this->magnet_v = v;
@@ -33,9 +36,10 @@ class GenericData
                 is_valid = false;
             }            
         }
-        GenericData(std::string tipo,float x,float y, float z)
+        GenericData(unsigned int time,std::string tipo,float x,float y, float z)
         {
             this->_type = tipo;
+            this->_time = time;
             if (tipo.compare("accelerometer"))
             {
                 this->accel_x = x;
