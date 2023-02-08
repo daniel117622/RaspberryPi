@@ -30,3 +30,9 @@ Después inicializar el cliente con "gcc client.c y ./client"
 Una vez inicializado el servidor y compilado el archivo del cliente, 
 se detallara en pantalla que la conexión fue establecida, posteriormente a esto, 
 el cliente puede enviar un string al servidor.
+
+===================== THREADS ======================
+
+Utilizar makefile usando el siguiente comando:
+</br>
+make main N="(numero a incremetar por 5)".
