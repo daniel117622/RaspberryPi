@@ -8,35 +8,64 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <unordered_map>
+#include <pthread.h>
 #define MAX 80
 #define PORT 64001
 
 #include "tcp.h"
-#include "json.h"
+// #include "json.h"
 
 #include <list>
 #include <iterator>
 
+void * sum_to_n(void * parameter);
+
 using namespace std;
+
 int main(int* argc, int** argv)
 {
-    cout<<"Hola mundo"<<endl;
+    cout<<"Abriendo servidor"<<endl;
 
-    list<GenericData> c1,c2,c3;
-    unordered_map< string , list<GenericData>* > map;
+    // list<GenericData> c1,c2,c3;
+    // unordered_map< string , list<GenericData>* > map;
 
-    map.insert({string("gyroscope"),     &c1});
-    map.insert({string("accelerometer"), &c2});
-    map.insert({string("magnetometer"),  &c3});
+    // map.insert({string("gyroscope"),     &c1});
+    // map.insert({string("accelerometer"), &c2});
+    // map.insert({string("magnetometer"),  &c3});
 
-    
+    pthread_t thread_id;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_create(&thread_id,&attr,)        
+
+    pthread_join(thread_id,NULL);
 
     TcpSocket t1(64001);
     t1.Listen();
     t1.Accept();
-    t1.Send("Hola\n",5);
-    t1.Read();
+    while(1)
+    {    
+
+        t1.Read();
+        t1.Send(t1.buffer,5);
+    }
    
     return 0;
 }
+
+void * sum_to_n(void * parameter)
+{
+    int32_t acc = 0;
+    int32_t n = atoi(parameter);
+    int32_t result = (n*(n+1))/2;
+    
+    pthread_exit(0);
+
+}
+
+
+
+
+
+

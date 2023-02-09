@@ -16,11 +16,11 @@ class TcpSocket
    int sockfd,newsockfd,portno;
    socklen_t clilen;
 
-   char buffer[1024];
    struct sockaddr_in serv_addr;
    struct sockaddr_in cli_addr;
    int n;
    public:
+   char buffer[1024];
    TcpSocket(int port)
    {
          sockfd = socket(AF_INET,SOCK_STREAM,0);
@@ -46,6 +46,7 @@ class TcpSocket
    }
    void Send(char * msg,int len)
    {
+      msg[len] = '\n'; 
       send(newsockfd,msg,len,0);
       bzero(buffer,1024);
    }
