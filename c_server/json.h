@@ -60,7 +60,7 @@ class GenericData
                 is_valid = false;
             }
         }
-        std::string GenericData::get()
+        std::string get()
         {
             if (!is_valid) {return "invalid";}
 
