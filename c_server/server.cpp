@@ -33,13 +33,16 @@ int main(int* argc, int** argv)
     // map.insert({string("gyroscope"),     &c1});
     // map.insert({string("accelerometer"), &c2});
     // map.insert({string("magnetometer"),  &c3});
-
+    int int_data = 3;
+    
     pthread_t thread_id;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    pthread_create(&thread_id,&attr,)        
+    pthread_create(&thread_id,&attr,sum_to_n,&int_data);        
 
     pthread_join(thread_id,NULL);
+    printf("%d",&int_data);    
+    
 
     TcpSocket t1(64001);
     t1.Listen();
@@ -57,9 +60,12 @@ int main(int* argc, int** argv)
 void * sum_to_n(void * parameter)
 {
     int32_t acc = 0;
-    int32_t n = atoi(parameter);
+    int32_t n = *((int*)parameter);
     int32_t result = (n*(n+1))/2;
     
+    int* p = (int*)parameter;
+    *p = result;  
+
     pthread_exit(0);
 
 }
