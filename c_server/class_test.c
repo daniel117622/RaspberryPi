@@ -30,6 +30,7 @@ int main(int* argc, int** argv)
     map.insert({string("accelerometer"), &c2});
     map.insert({string("magnetometer"),  &c3});
 
+    
    
     return 0;
 }
