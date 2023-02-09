@@ -30,13 +30,6 @@ int main(int* argc, int** argv)
     map.insert({string("accelerometer"), &c2});
     map.insert({string("magnetometer"),  &c3});
 
-    
-
-    TcpSocket t1(64001);
-    t1.Listen();
-    t1.Accept();
-    t1.Send("Hola\n",5);
-    t1.Read();
    
     return 0;
 }

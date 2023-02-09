@@ -1,8 +1,9 @@
-#include <iostream>
-#include <map>  
+#include <iostream> 
 #include <stdio.h>
 #include <string.h>
 #include <bits/stdc++.h>
+#include <fstream>
+#include <iomanip>
 
 class GenericData
 {
@@ -97,7 +98,45 @@ class GenericData
 
 };
 
+class Parser // Returns a generic Data object when it reads. Only static methods
+{
+    private:
+        std::ifstream _infile;
+    public:
+        // Usage: First Load a file
+        int loadFile(char* filename)
+        {
+            _infile = std::ifstream(filename);
+            return 0;
+        }
+        int populateDictionary(std::unordered_map<std::string,std::list<GenericData*>> &dict)
+        {
+            enum state
+            {
+                EXPECTING_CATEGORY,
+                READ_INVALID,
+                READ_ACCEL,
+                READ_GYRO,
+                READ_MAGNET
+            } STATE;
 
+            std::string currentLine;
+            std::string token;
+            // START STATE MACHINE
+            STATE = EXPECTING_CATEGORY;
+            while(std::getline(_infile,currentLine))
+            {
+                while( ( token = std::getline(currentLine,' ') ))
+                {
+                    return 1; // Pass for the moment
+                }
+            } 
+
+            return 0;
+        }
+
+
+}
 
 // Magnetometro. {Escalar}
 // Gyroscopio {_x,_y,_z}
