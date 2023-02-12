@@ -27,7 +27,7 @@ class GenericData
         {
             this->_type = tipo;
             this->_time = time;
-            if (tipo.compare("magnetometer"))
+            if (tipo.compare("magnetometer") == 0)
             {
                 this->magnet_v = v;
                 is_valid = true;
@@ -41,18 +41,18 @@ class GenericData
         {
             this->_type = tipo;
             this->_time = time;
-            if (tipo.compare("accelerometer"))
+            if (tipo.compare("accelerometer") == 0)
             {
                 this->accel_x = x;
                 this->accel_y = y;
                 this->accel_z = z;
                 is_valid = true;
             }
-            else if (tipo.compare("gyroscope"))
+            else if (tipo.compare("gyroscope") == 0)
             {
-                this->accel_x = x;
-                this->accel_y = y;
-                this->accel_z = z;
+                this->gyro_x = x;
+                this->gyro_y = y;
+                this->gyro_z = z;
                 is_valid = true;
             }
             else
@@ -64,13 +64,13 @@ class GenericData
         {
             if (!is_valid) {return "invalid";}
 
-            if (this->_type.compare("magnetometer"))
+            if (this->_type.compare("magnetometer") == 0)
             {
                 std::stringstream s;
                 s<<this->magnet_v;
                 return std::string(s.str());     
             }
-            else if (this->_type.compare("accelerometer"))
+            else if (this->_type.compare("accelerometer") == 0)
             {
                 std::stringstream s;
                 s<<"(";
@@ -82,7 +82,7 @@ class GenericData
                 s<<")";                
                 return std::string(s.str());    
             }
-            else if (this->_type.compare("gyroscope"))
+            else if (this->_type.compare("gyroscope") == 0)
             {
                 std::stringstream s;
                 s<<"(";
@@ -106,7 +106,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
         // Usage: First Load a file
         int loadFile(char* filename)
         {
-            _infile = std::ifstream(filename);
+
             return 0;
         }
         int populateDictionary(std::unordered_map<std::string,std::list<GenericData*>> &dict)
@@ -128,7 +128,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
             STATE = EXPECTING_CATEGORY;
             while(std::getline(_infile,currentLine))
             {
-                while( ( token = std::getline(currentLine,' ') ))
+                while( true )
                 {
                     return 1; // Pass for the moment
                 }
@@ -137,8 +137,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
             return 0;
         }
 
-
-}
+};
 
 // Magnetometro. {Escalar}
 // Gyroscopio {_x,_y,_z}

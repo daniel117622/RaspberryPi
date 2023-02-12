@@ -13,14 +13,14 @@
 
 class TcpSocket
 {
-   private:
+   public:
    int sockfd,newsockfd,portno;
    socklen_t clilen;
 
    struct sockaddr_in serv_addr;
    struct sockaddr_in cli_addr;
    int n;
-   public:
+
    char buffer[1024];
    TcpSocket(int port)
    {
@@ -31,12 +31,11 @@ class TcpSocket
          serv_addr.sin_addr.s_addr = INADDR_ANY;
          serv_addr.sin_port = htons(port);   
          
-         if ( bind(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr) ) ) {std::cout << "Error con bind" << std::endl;} 
+         if ( int res = bind(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr) ) ) {std::cout << strerror(res) << std::endl;} 
 
       }
    void Listen() 
    {
-      std::cout<<"Listening..."<<std::endl;
       listen(sockfd,5);
    }  
    void Accept()
@@ -44,16 +43,6 @@ class TcpSocket
       newsockfd = accept(sockfd,(struct sockaddr*) &cli_addr,&clilen);
       if (newsockfd < 0) { std::cout << "Error con accept"  << std::endl; }
       printf("Got connnection from %s port %d\n", inet_ntoa(cli_addr.sin_addr),ntohs(cli_addr.sin_port));
-   }
-
-   void * AcceptAsync(void * thisObjectPtr)
-   {
-      TcpSocket thisObject = (TcpSocket)(*thisObjectPtr);
-
-      thisObject.newsockfd = accept(sockfd,(struct sockaddr*) &cli_addr,&clilen);
-      if (newsockfd < 0) { std::cout << "Error con accept"  << std::endl; }
-      printf("Got connnection from %s port %d\n", inet_ntoa(cli_addr.sin_addr),ntohs(cli_addr.sin_port));
-      pthread_exit(0);
    }
 
 

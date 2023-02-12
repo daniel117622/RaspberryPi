@@ -36,3 +36,10 @@ el cliente puede enviar un string al servidor.
 Utilizar makefile usando el siguiente comando:
 </br>
 make main N="(numero a incremetar por 5)".
+
+========== C SERVER =============== 
+Compilar json tests
+g++ -w -std=c++11 -pthread -o json_parser json.cpp json_parsing_test.cpp
+
+Servidor
+g++ -w -std=c++11 -pthread -o server tcp.cpp server.cpp
