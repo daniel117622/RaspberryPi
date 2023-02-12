@@ -38,8 +38,10 @@ Utilizar makefile usando el siguiente comando:
 make main N="(numero a incremetar por 5)".
 
 ========== C SERVER =============== 
+</br>
 Compilar json tests
+</br>
 g++ -w -std=c++11 -pthread -o json_parser json.cpp json_parsing_test.cpp
-
+</br>
 Servidor
 g++ -w -std=c++11 -pthread -o server tcp.cpp server.cpp
