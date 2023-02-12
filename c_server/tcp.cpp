@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 class TcpSocket
 {
@@ -44,6 +45,18 @@ class TcpSocket
       if (newsockfd < 0) { std::cout << "Error con accept"  << std::endl; }
       printf("Got connnection from %s port %d\n", inet_ntoa(cli_addr.sin_addr),ntohs(cli_addr.sin_port));
    }
+
+   void * AcceptAsync(void * thisObjectPtr)
+   {
+      TcpSocket thisObject = (TcpSocket)(*thisObjectPtr);
+
+      thisObject.newsockfd = accept(sockfd,(struct sockaddr*) &cli_addr,&clilen);
+      if (newsockfd < 0) { std::cout << "Error con accept"  << std::endl; }
+      printf("Got connnection from %s port %d\n", inet_ntoa(cli_addr.sin_addr),ntohs(cli_addr.sin_port));
+      pthread_exit(0);
+   }
+
+
    void Send(char * msg,int len)
    {
       msg[len] = '\n'; 

@@ -122,6 +122,8 @@ class Parser // Returns a generic Data object when it reads. Only static methods
 
             std::string currentLine;
             std::string token;
+
+
             // START STATE MACHINE
             STATE = EXPECTING_CATEGORY;
             while(std::getline(_infile,currentLine))
