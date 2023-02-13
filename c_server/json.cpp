@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include <fstream>
 #include <iomanip>
+#include <stdlib.h>
 
 #include <unordered_map>
 #include <string>
@@ -107,28 +108,20 @@ class Parser // Returns a generic Data object when it reads. Only static methods
         std::ifstream _infile;
     public:
         // Usage: First Load a file
-        int loadFile(char* filename)
+        static int populateDictionary(std::unordered_map<std::string,std::list<GenericData>> dict,std::string &filePath)
         {
-
-            return 0;
-        }
-        int populateDictionary(std::unordered_map<std::string,std::list<GenericData*>> &dict,std::string filePath)
-        {
-            enum state
-            {
-                EXPECTING_JSON
+            enum state  { EXPECTING_JSON,
                 EXPECTING_CATEGORY,
                 READ_INVALID,
                 READ_ACCEL,
                 READ_GYRO,
                 READ_MAGNET
             } STATE;
-
             size_t BUFFSIZE = 1024;
             char * lineBuffer;
             char * token;
 
-            FILE * fp = fopen(filePath,"w");
+            FILE * fp = fopen(filePath.c_str(),"w");
             // START STATE MACHINE
             STATE = EXPECTING_JSON;
             while(true)
@@ -159,7 +152,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
                         case READ_INVALID: { return -1; }
                         case READ_ACCEL:
                         {
-                            char * ptr  = strstr(token,"[{\"timestamp\"")
+                            char * ptr  = strstr(token,"[{\"timestamp\"");
                             if (ptr != NULL) {return -1;}
                             break;
                         }
