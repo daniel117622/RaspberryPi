@@ -1,9 +1,12 @@
 #include <iostream> 
 #include <stdio.h>
-#include <string.h>
 #include <bits/stdc++.h>
 #include <fstream>
 #include <iomanip>
+
+#include <unordered_map>
+#include <string>
+
 
 class GenericData
 {
@@ -109,10 +112,11 @@ class Parser // Returns a generic Data object when it reads. Only static methods
 
             return 0;
         }
-        int populateDictionary(std::unordered_map<std::string,std::list<GenericData*>> &dict)
+        int populateDictionary(std::unordered_map<std::string,std::list<GenericData*>> &dict,std::string filePath)
         {
             enum state
             {
+                EXPECTING_JSON
                 EXPECTING_CATEGORY,
                 READ_INVALID,
                 READ_ACCEL,
@@ -120,19 +124,60 @@ class Parser // Returns a generic Data object when it reads. Only static methods
                 READ_MAGNET
             } STATE;
 
-            std::string currentLine;
-            std::string token;
+            size_t BUFFSIZE = 1024;
+            char * lineBuffer;
+            char * token;
 
-
+            FILE * fp = fopen(filePath,"w");
             // START STATE MACHINE
-            STATE = EXPECTING_CATEGORY;
-            while(std::getline(_infile,currentLine))
+            STATE = EXPECTING_JSON;
+            while(true)
             {
-                while( true )
+                ssize_t n = getline(&lineBuffer,&BUFFSIZE,fp);
+                if (n == -1) {break;}
+                // TOKENIZE EACH LINE 
+                char * token = strtok(lineBuffer," :");
+                while (token)
                 {
-                    return 1; // Pass for the moment
+                    // DO SOMETHING CONSIDERING STATE
+                    switch(STATE)
+                    {
+                        case EXPECTING_JSON:
+                        {
+                            if (strcmp(token,"{")) { STATE = EXPECTING_CATEGORY; }
+                            else { return -1; }
+                            break;
+                        }
+                        case EXPECTING_CATEGORY:
+                        {
+                            if      ( strcmp(token,"\"magnetometer\"") == 0  ) { STATE = READ_MAGNET; }
+                            else if ( strcmp(token,"\"accelerometer\"") == 0 ) { STATE = READ_ACCEL;  }
+                            else if ( strcmp(token,"\"gyroscope\"") == 0     ) { STATE = READ_GYRO;   }
+                            else { STATE = READ_INVALID ; return -1; }
+                            break;
+                        }
+                        case READ_INVALID: { return -1; }
+                        case READ_ACCEL:
+                        {
+                            char * ptr  = strstr(token,"[{\"timestamp\"")
+                            if (ptr != NULL) {return -1;}
+                            break;
+                        }
+                        case READ_GYRO:
+                        {
+
+                            break;
+                        }
+                        case READ_MAGNET:
+                        {
+
+                            break;
+                        }
+                    }
+                    // 
+                    token = strtok(NULL," ");
                 }
-            } 
+            }
 
             return 0;
         }
