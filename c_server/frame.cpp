@@ -1,4 +1,5 @@
 #include <stdint.h> // uint8_t
+#include <stdbool.h>
 #define MAGNETOMETER 1
 #define ACCELEROMETER 2
 #define GYROSCOPE 4
@@ -15,6 +16,12 @@ typedef struct
     char v3[4];
     char checkSum;
 } sFrame;
+
+
+//void generateCheckSum(sFrame*);
+//void writePreamble(sFrame*);
+//bool validateCheckSum(sFrame*);
+
 
 void generateCheckSum(sFrame *s) // GENERATE A CHECKSUM FOR THE GIVEN STRUCT
 {
@@ -53,5 +60,4 @@ bool validateCheckSum(sFrame *s)
 
     sFrame* ss = (sFrame*)ptr;
     if (ss->checkSum == acc) { return true; } else { return false; }
-
 }

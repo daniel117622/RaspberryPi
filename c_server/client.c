@@ -7,18 +7,43 @@
 #include <sys/socket.h>
 #include <unistd.h> // read(), write(), close()
 #define MAX 80
-#define PORT 64001
+#define PORT 63002
 #define SA struct sockaddr
+
+#include "frame.cpp"
+
 void func(int sockfd)
 {
     char buff[MAX];
     int n;
-    for (;;) {
+    for (;;) 
+    {
         bzero(buff, sizeof(buff));
         printf("Enter the string : ");
         n = 0;
         while ((buff[n++] = getchar()) != '\n');
         buff[n] = '\n';
+
+        if (true)
+        {   
+            printf("You are sending a frame\n");
+            sFrame *s;
+
+            s->preamble = (char)0x69;
+            s->time[0] = (char)0x0;
+            s->type = (char)ACCELEROMETER;
+            s->v1[0] = (char)0xCA;  s->v1[1] = (char)0xCA; s->v1[2] = (char)0xCA; s->v1[3] = (char)0xCA;
+            s->v2[0] = (char)0xCA;  s->v2[1] = (char)0xCA; s->v2[2] = (char)0xCA; s->v2[3] = (char)0xCA;
+            s->v3[0] = (char)0xCA;  s->v3[1] = (char)0xCA; s->v3[2] = (char)0xCA; s->v3[3] = (char)0xCA;
+
+            printf("Generating checksum\n");
+            generateCheckSum(s);
+
+            write(sockfd,(void *)s,sizeof(sFrame));
+            printf("Sent a test frame\n");
+            continue;
+        }
+        
         write(sockfd, buff, sizeof(buff));
         bzero(buff, sizeof(buff));
         read(sockfd, buff, sizeof(buff));
@@ -42,7 +67,7 @@ int main()
         exit(0);
     }
     else
-        printf("Socket successfully created..\n");
+    printf("Socket successfully created..\n");
     bzero(&servaddr, sizeof(servaddr));
  
     // assign IP, PORT

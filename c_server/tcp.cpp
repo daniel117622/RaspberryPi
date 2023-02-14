@@ -76,6 +76,13 @@ class TcpSocket
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
+      // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
+      if (*buffer == 0x69)
+      {
+         std::cout << "Received a frame";
+         return;
+      }   
+
       std::cout << buffer ;
    }
 
