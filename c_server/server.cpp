@@ -13,6 +13,7 @@
 #define PORT 64001
 
 #include "tcp.cpp"
+#include "frame.cpp"
 // #include "json.h"
 
 #include <list>
@@ -91,7 +92,7 @@ void * worker (void * parameter)
     while (1)
     {
         thisObject.Read();
-        thisObject.Send(thisObject.buffer,120);
+        thisObject.Send(thisObject.buffer,strlen(thisObject.buffer));
     }
 
     pthread_exit(0);

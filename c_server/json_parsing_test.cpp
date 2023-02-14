@@ -1,6 +1,9 @@
 #include "json.cpp"
 using namespace std;
 
+// COMPILE WITH 
+// g++ -w -std=c++11 -fcompare-debug-second -pthread -o json_main json.cpp frame.cpp json_parsing_test.cpp ;
+
 int main(void)
 {
     GenericData r1(1,"magnetometer",(float)10.6);
@@ -25,17 +28,19 @@ int main(void)
         std::cout<<lineBuffer;
     }
     */ 
+
+   // This will be managed by the library  
+    /*
     list<GenericData> c1;
     list<GenericData> c2;
     list<GenericData> c3;
     unordered_map<string,list<GenericData> > dict;
-    
 
     dict.insert(make_pair("hola",c1));
+    */
+
 
     string filepath("./data/example.json");
-
-    Parser::populateDictionary(dict,filepath);
 
     return 0;
 }

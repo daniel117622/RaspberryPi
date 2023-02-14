@@ -102,6 +102,7 @@ class GenericData
 
 };
 
+/*
 class Parser // Returns a generic Data object when it reads. Only static methods
 {
     private:
@@ -129,7 +130,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
                 ssize_t n = getline(&lineBuffer,&BUFFSIZE,fp);
                 if (n == -1) {break;}
                 // TOKENIZE EACH LINE 
-                char * token = strtok(lineBuffer," :");
+                char * token = strtok(lineBuffer," :\"");
                 while (token)
                 {
                     // DO SOMETHING CONSIDERING STATE
@@ -143,9 +144,9 @@ class Parser // Returns a generic Data object when it reads. Only static methods
                         }
                         case EXPECTING_CATEGORY:
                         {
-                            if      ( strcmp(token,"\"magnetometer\"") == 0  ) { STATE = READ_MAGNET; }
-                            else if ( strcmp(token,"\"accelerometer\"") == 0 ) { STATE = READ_ACCEL;  }
-                            else if ( strcmp(token,"\"gyroscope\"") == 0     ) { STATE = READ_GYRO;   }
+                            if      ( strcmp(token,"magnetometer") == 0  ) { STATE = READ_MAGNET; }
+                            else if ( strcmp(token,"accelerometer") == 0 ) { STATE = READ_ACCEL;  }
+                            else if ( strcmp(token,"gyroscope") == 0     ) { STATE = READ_GYRO;   }
                             else { STATE = READ_INVALID ; return -1; }
                             break;
                         }
@@ -176,6 +177,7 @@ class Parser // Returns a generic Data object when it reads. Only static methods
         }
 
 };
+*/
 
 // Magnetometro. {Escalar}
 // Gyroscopio {_x,_y,_z}

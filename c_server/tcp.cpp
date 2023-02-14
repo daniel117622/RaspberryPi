@@ -11,6 +11,8 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
+#include "frame.cpp"
+
 class TcpSocket
 {
    public:
@@ -52,11 +54,29 @@ class TcpSocket
       send(newsockfd,msg,len,0);
       bzero(buffer,1024);
    }
+
+   void SendFrame(sFrame * s)
+   {
+      uint8_t msgLength = sizeof(sFrame);
+      writePreamble(s);
+      generateCheckSum(s); // Writes the checksum byte
+      send( newsockfd , (char *) s , msgLength , 0 );
+   }
+
+   void ReceiveFrame(sFrame * s)
+   {
+      uint8_t msgLength = sizeof(sFrame);
+      n = read(newsockfd,s,msgLength);
+      if (n < 0) {std::cout << "Error on read" << std::endl;}
+      if (validateCheckSum(s) == false) { std::cout << "Corrupted checksum" << std::endl; return; }
+      std::cout << "Frame arrived and saved" ;      
+   }
+
    void Read()
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
-      std::cout << buffer << std::endl;
+      std::cout << buffer ;
    }
 
    ~TcpSocket()

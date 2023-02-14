@@ -1,5 +1,5 @@
-OBJS	= json_parsing_test.o json.o
-SOURCE	= json_parsing_test.cpp json.cpp
+OBJS	= json_parsing_test.o tcp.o json.o 
+SOURCE	= json_parsing_test.cpp tcp.cpp json.cpp 
 HEADER	= 
 OUT	= json_parse
 CC	 = g++
@@ -16,6 +16,8 @@ json_parsing_test.o: json_parsing_test.cpp
 json.o: json.cpp
 	$(CC) $(FLAGS) json.cpp -std=c++11
 
+tcp.o: tcp.cpp
+	$(CC) $(FLAGS) tcp.cpp -std=c++11
 
 clean:
 	rm -f $(OBJS) $(OUT)
