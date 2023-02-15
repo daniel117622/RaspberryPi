@@ -82,8 +82,6 @@ void * worker (void * parameter)
     thisObject.Accept();
     while (1)
     {
-        // thisObject.Read();
-        // PENDING TO MUTEX THIS VARIABLE
         thisObject.ReceiveFrame(&frameBuffer);
         thisObject.Send(thisObject.buffer,strlen(thisObject.buffer));
     }

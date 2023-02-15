@@ -68,8 +68,7 @@ class TcpSocket
       uint8_t msgLength = sizeof(sFrame);
       n = read(newsockfd,s,msgLength);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
-      \\ if (!validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
-      printf("Checksum value: 0x%X\n", s->checkSum);      
+      if (!validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
    }
 
    void Read()
