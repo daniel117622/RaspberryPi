@@ -22,9 +22,9 @@ void func(int sockfd)
     char buff[MAX];
 
     // JSON STUFF
-    // std::ifstream f("data/example.json"); 
-    // json data = json::parse(f);
-    //std::cout << data;
+    std::ifstream f("data/example.json"); 
+    json data = json::parse(f);
+    std::cout << data;
 
 
     int n;

@@ -1,7 +1,0 @@
-g++ -g -c -w -fcompare-debug-second json_parsing_test.cpp -std=c++11
-g++ -g -c -w -fcompare-debug-second json.cpp -std=c++11
-g++ -g json_parsing_test.o json.o -o json_parse -pthread
-make clean
-make[1]: Entering directory '/nfs/pdx/disks/home.directory.056/dadelacr/RaspberryPi/c_server'
-rm -f json_parsing_test.o json.o json_parse
-make[1]: Leaving directory '/nfs/pdx/disks/home.directory.056/dadelacr/RaspberryPi/c_server'
