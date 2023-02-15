@@ -68,21 +68,38 @@ class TcpSocket
       uint8_t msgLength = sizeof(sFrame);
       n = read(newsockfd,s,msgLength);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
-      if (!validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
+      if (validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
+      std::cout << (char)s->preamble << std::endl;
    }
 
-   void Read()
+   void Read(sFrame *s)
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-      if (*buffer == (char)0x69)
+      if (*buffer == (char)0x0F) // PREABMLE
       {
-         std::cout << "Received a frame";
+         
+         // DISPLAY THE FRAME 
+         printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
+         printf("TYPE: 0x%hhx\n",(unsigned char) buffer[1]);
+         printf("TIMESTAMP: %f\n",(float) buffer[2]);
+         printf("V1: %f\n",(float)buffer[6]);
+         printf("V2: %f\n",(float)buffer[10]);
+         printf("V3: %f\n",(float)buffer[14]);
+         printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[18]);
+         // SAVE THE FRAME IN LOCAL
+         s->preamble = (unsigned char) buffer[0];
+         s->type = (unsigned char) buffer[1];
+         s->time = (float) buffer[2];
+         s->v1 = (float) buffer[6];
+         s->v2 = (float) buffer[10];
+         s->v3 = (float) buffer[14];
+         s->checkSum = (unsigned char)buffer[18];
          return;
-      }   
+      }
 
-      std::cout << buffer ;
+      std::cout << "No frame received" ;
    }
 
    ~TcpSocket()

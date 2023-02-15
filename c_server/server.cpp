@@ -82,7 +82,7 @@ void * worker (void * parameter)
     thisObject.Accept();
     while (1)
     {
-        thisObject.ReceiveFrame(&frameBuffer);
+        thisObject.Read(&frameBuffer);
         thisObject.Send(thisObject.buffer,strlen(thisObject.buffer));
     }
 

@@ -36,7 +36,7 @@ void func(int sockfd)
         while ((buff[n++] = getchar()) != '\n');
         buff[n] = '\n';
 
-        if (true)
+        if (buff[0] == '/') // A COMMAND
         {   
             printf("You are sending a frame\n");
             sFrame s;
@@ -44,13 +44,13 @@ void func(int sockfd)
             
             
             bzero(sp,sizeof(sFrame));
-            sp->preamble = (char)0x69;
+            sp->preamble = (char)0x0F; // NON PRINTABLE CHAR
             sp->time[0] = (char)0x0;
             sp->type = (char)ACCELEROMETER;
             sp->v1[0] = (char)0xAA;  sp->v1[1] = (char)0xCA; sp->v1[2] = (char)0xCA; sp->v1[3] = (char)0xCA;
             sp->v2[0] = (char)0xFF;  sp->v2[1] = (char)0xCA; sp->v2[2] = (char)0xCA; sp->v2[3] = (char)0xCA;
             sp->v3[0] = (char)0xFF;  sp->v3[1] = (char)0xFF; sp->v3[2] = (char)0xCA; sp->v3[3] = (char)0xCA;
-
+            generateCheckSum(sp);
             printf("Generating checksum\n");
 
             send(sockfd,(char *) sp, sizeof(sFrame), 0);
