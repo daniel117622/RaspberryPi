@@ -46,3 +46,8 @@ g++ -w -std=c++11 -pthread -o json_parser json.cpp json_parsing_test.cpp
 Servidor
 </br>
 g++ -w -std=c++11 -pthread -o server tcp.cpp server.cpp
+
+====================PRUEBA JSON====================
+</br>
+g++ -std=c++11 example.cpp -o example
+./example
