@@ -63,13 +63,13 @@ class TcpSocket
       send( newsockfd , (char *) s , msgLength , 0 );
    }
 
-   void ReceiveFrame(sFrame * s)
+   void ReceiveFrame(sFrame * s) // Reference to write on it
    {
       uint8_t msgLength = sizeof(sFrame);
       n = read(newsockfd,s,msgLength);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
-      if (validateCheckSum(s) == false) { std::cout << "Corrupted checksum" << std::endl; return; }
-      std::cout << "Frame arrived and saved" ;      
+      \\ if (!validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
+      printf("Checksum value: 0x%X\n", s->checkSum);      
    }
 
    void Read()
@@ -77,7 +77,7 @@ class TcpSocket
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-      if (*buffer == 0x69)
+      if (*buffer == (char)0x69)
       {
          std::cout << "Received a frame";
          return;

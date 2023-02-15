@@ -25,15 +25,15 @@ typedef struct
 
 void generateCheckSum(sFrame *s) // GENERATE A CHECKSUM FOR THE GIVEN STRUCT
 {
-    void * ptr = (void*) s; //START OF FRAME
-    void * endPtr = ptr + sizeof(sFrame); // END OF FRAME
-    void * tmp = ptr; // ITERATOR
+    char * ptr = (char*) s; //START OF FRAME
+    char * endPtr = ptr + sizeof(sFrame); // END OF FRAME
+    char * tmp = ptr; // ITERATOR
 
     uint8_t acc = 0;
     while(tmp != endPtr)
     {
-        acc +=  *((uint8_t*)tmp) % 4; // accumlate individual bytes values
-        tmp+1;
+        acc +=  *((uint8_t*)tmp); // accumlate individual bytes values
+        tmp++;
     }
 
     sFrame* ss = (sFrame*)ptr;
@@ -47,17 +47,18 @@ void writePreamble(sFrame *s)
 
 bool validateCheckSum(sFrame *s)
 {
-    void * ptr = (void*) s; //START OF FRAME
-    void * endPtr = ptr + sizeof(sFrame); // END OF FRAME
-    void * tmp = ptr; // ITERATOR
+    char * ptr = (char*) s; //START OF FRAME
+    char * endPtr = ptr + sizeof(sFrame); // END OF FRAME
+    char * tmp = ptr; // ITERATOR
 
     uint8_t acc = 0;
     while(tmp != endPtr)
     {
-        acc +=  *((uint8_t*)tmp) % 4;
-        tmp+1;
+        acc +=  *((uint8_t*)tmp);
+        tmp++;
     }
 
     sFrame* ss = (sFrame*)ptr;
+    printf("\nMeasured checksum: 0x%X \nActual checksum: 0x%X\n\n",(char)ss->checkSum,acc);
     if (ss->checkSum == acc) { return true; } else { return false; }
 }

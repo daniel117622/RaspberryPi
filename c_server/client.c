@@ -27,19 +27,23 @@ void func(int sockfd)
         if (true)
         {   
             printf("You are sending a frame\n");
-            sFrame *s;
-
-            s->preamble = (char)0x69;
-            s->time[0] = (char)0x0;
-            s->type = (char)ACCELEROMETER;
-            s->v1[0] = (char)0xCA;  s->v1[1] = (char)0xCA; s->v1[2] = (char)0xCA; s->v1[3] = (char)0xCA;
-            s->v2[0] = (char)0xCA;  s->v2[1] = (char)0xCA; s->v2[2] = (char)0xCA; s->v2[3] = (char)0xCA;
-            s->v3[0] = (char)0xCA;  s->v3[1] = (char)0xCA; s->v3[2] = (char)0xCA; s->v3[3] = (char)0xCA;
+            sFrame s;
+            sFrame *sp = &s;
+            
+            
+            bzero(sp,sizeof(sFrame));
+            sp->preamble = (char)0x69;
+            sp->time[0] = (char)0x0;
+            sp->type = (char)ACCELEROMETER;
+            sp->v1[0] = (char)0xCA;  sp->v1[1] = (char)0xCA; sp->v1[2] = (char)0xCA; sp->v1[3] = (char)0xCA;
+            sp->v2[0] = (char)0xCA;  sp->v2[1] = (char)0xCA; sp->v2[2] = (char)0xCA; sp->v2[3] = (char)0xCA;
+            sp->v3[0] = (char)0xCA;  sp->v3[1] = (char)0xCA; sp->v3[2] = (char)0xCA; sp->v3[3] = (char)0xCA;
 
             printf("Generating checksum\n");
-            generateCheckSum(s);
+            generateCheckSum(sp);
+            validateCheckSum(sp);
 
-            write(sockfd,(void *)s,sizeof(sFrame));
+            send(sockfd,(char *) sp, sizeof(sFrame), 0);
             printf("Sent a test frame\n");
             continue;
         }
@@ -55,7 +59,7 @@ void func(int sockfd)
     }
 }
  
-int main()
+int main( int argc, char** argv)
 {
     int sockfd, connfd;
     struct sockaddr_in servaddr, cli;
@@ -73,7 +77,7 @@ int main()
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    servaddr.sin_port = htons(PORT);
+    servaddr.sin_port = htons(atoi(argv[1]));
  
     // connect the client socket to server socket
     if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr))

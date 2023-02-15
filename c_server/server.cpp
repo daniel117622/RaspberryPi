@@ -9,30 +9,33 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <unordered_map>
-#define MAX 80
-#define PORT 64001
+
 
 #include "tcp.cpp"
 // #include "json.h"
 
 #include <list>
 #include <iterator>
+#include <signal.h>
 
 void * sum_to_n(void * parameter);
 void * worker(void * parameter);
+void sig_handler(int signum);
 
 using namespace std;
 
-int main(int* argc, int** argv)
+sFrame frameBuffer;
+
+int main(int* argc, char** argv)
 {
     cout<<"Abriendo servidor"<<endl;
 
+    int n = atoi(argv[1]);
 
-
-    TcpSocket t1(63001);
-    TcpSocket t2(63002);
-    TcpSocket t3(63003);
-    TcpSocket t4(63004);
+    TcpSocket t1(n);
+    TcpSocket t2(n+1);
+    TcpSocket t3(n+2);
+    TcpSocket t4(n+3);
 
     t1.Listen();
     t2.Listen();
@@ -71,33 +74,22 @@ int main(int* argc, int** argv)
     return 0;
 }
 
-void * sum_to_n(void * parameter)
-{
-    int32_t acc = 0;
-    int32_t n = *((int*)parameter);
-    int32_t result = (n*(n+1))/2;
-    
-    int* p = (int*)parameter;
-    *p = result;  
 
-    pthread_exit(0);
-}
 
 void * worker (void * parameter)
 {
     TcpSocket thisObject = *((TcpSocket*) parameter);
-
     thisObject.Accept();
     while (1)
     {
-        thisObject.Read();
+        // thisObject.Read();
+        // PENDING TO MUTEX THIS VARIABLE
+        thisObject.ReceiveFrame(&frameBuffer);
         thisObject.Send(thisObject.buffer,strlen(thisObject.buffer));
     }
 
     pthread_exit(0);
 }
-
-
 
 
 
