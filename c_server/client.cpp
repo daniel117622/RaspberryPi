@@ -12,19 +12,15 @@
 #define PORT 63002
 #define SA struct sockaddr
 
-#include "json.hpp"
+
 #include "frame.cpp"
 
-using json = nlohmann::json;
 
 void func(int sockfd)
 {
     char buff[MAX];
 
     // JSON STUFF
-    std::ifstream f("data/example.json"); 
-    json data = json::parse(f);
-    std::cout << data;
 
 
     int n;
@@ -39,9 +35,11 @@ void func(int sockfd)
         if (buff[0] == '/') // A COMMAND
         {   
             printf("You are sending a frame\n");
+            
+            /* CODE TO SEND FRAMES
+
             sFrame s;
             sFrame *sp = &s;
-            
             
             bzero(sp,sizeof(sFrame));
             sp->preamble = (char)0x0F; // NON PRINTABLE CHAR
@@ -52,9 +50,10 @@ void func(int sockfd)
             sp->v3[0] = (char)0xFF;  sp->v3[1] = (char)0xFF; sp->v3[2] = (char)0xCA; sp->v3[3] = (char)0xCA;
             generateCheckSum(sp);
             printf("Generating checksum\n");
-
             send(sockfd,(char *) sp, sizeof(sFrame), 0);
             printf("Sent a test frame\n");
+            */
+
             continue;
         }
         

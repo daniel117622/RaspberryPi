@@ -12,23 +12,30 @@
 
 
 #include "tcp.cpp"
-// #include "json.h"
 
 #include <list>
 #include <iterator>
 #include <signal.h>
+
+
 
 void * sum_to_n(void * parameter);
 void * worker(void * parameter);
 void sig_handler(int signum);
 
 using namespace std;
+using json = nlohmann::json;
 
+// GLOBALS
 sFrame frameBuffer;
+json data; 
 
 int main(int* argc, char** argv)
 {
     cout<<"Abriendo servidor"<<endl;
+
+    std::ifstream f("data/example.json"); 
+    data = json::parse(f);
 
     int n = atoi(argv[1]);
 
@@ -82,8 +89,18 @@ void * worker (void * parameter)
     thisObject.Accept();
     while (1)
     {
-        thisObject.Read(&frameBuffer);
-        thisObject.Send(thisObject.buffer,strlen(thisObject.buffer));
+        if (!thisObject.ReadCommand()) // USER DID NOT ISSUED A COMMAND
+        {
+            char * errorMessage = "Only commands supported at this moment";
+            thisObject.Send(errorMessage,strlen(errorMessage));
+        } else
+        {
+            thisObject.SendFrame(&frameBuffer, &json) // Process command fill the structure and send it to the client.
+            {
+
+            }
+        }
+
     }
 
     pthread_exit(0);

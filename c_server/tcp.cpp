@@ -12,6 +12,7 @@
 #include <pthread.h>
 
 #include "frame.cpp"
+#include "json.hpp"
 
 class TcpSocket
 {
@@ -55,15 +56,26 @@ class TcpSocket
       bzero(buffer,1024);
    }
 
-   void SendFrame(sFrame * s)
+   void SendFrame(sFrame * s, json* data) 
    {
       uint8_t msgLength = sizeof(sFrame);
       writePreamble(s);
+      
+      // GET THE DATA INTO SOME STRINGS
+     
+
+      // CONVERT THOSE STRINGS INTO APROPIATE TYPES
+
+
+
+      // PUT THOSE TYPE INTO THE FRAME
+
+
       generateCheckSum(s); // Writes the checksum byte
       send( newsockfd , (char *) s , msgLength , 0 );
    }
 
-   void ReceiveFrame(sFrame * s) // Reference to write on it
+   void ReceiveFrame(sFrame * s) // THIS WILL BE USED IN THE CLIENT
    {
       uint8_t msgLength = sizeof(sFrame);
       n = read(newsockfd,s,msgLength);
@@ -72,10 +84,11 @@ class TcpSocket
       std::cout << (char)s->preamble << std::endl;
    }
 
-   void Read(sFrame *s)
+   bool ReadCommand() // POINTER TO A FRAME THAT IS GOINF TO BE SENT TO THE CLIENT.
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
+      /*
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
       if (*buffer == (char)0x0F) // PREABMLE
       {
@@ -98,8 +111,13 @@ class TcpSocket
          s->checkSum = (unsigned char)buffer[18];
          return;
       }
+      */
+      std::cout << "Sending frame data to user..." ;
 
-      std::cout << "No frame received" ;
+      if (buffer[0] == '/')
+      {
+         std::cout << "User issued a command...." << std::endl;
+      }
    }
 
    ~TcpSocket()
