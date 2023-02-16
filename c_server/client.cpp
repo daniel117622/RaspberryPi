@@ -8,6 +8,7 @@
 #include <unistd.h> // read(), write(), close()
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #define MAX 80
 #define PORT 63002
 #define SA struct sockaddr
@@ -18,53 +19,110 @@
 
 void func(int sockfd)
 {
-    char buff[MAX];
-
+    char buff[80];
     // JSON STUFF
 
 
     int n;
     for (;;) 
     {
-        bzero(buff, sizeof(buff));
+        bzero(buff, 80);
         printf("Enter the string : ");
         n = 0;
         while ((buff[n++] = getchar()) != '\n');
         buff[n] = '\n';
 
-        if (buff[0] == '/') // A COMMAND
-        {   
-            printf("You are sending a frame\n");
-            
-            /* CODE TO SEND FRAMES
+        char * token;
+        char * cmdBuffer;
 
-            sFrame s;
-            sFrame *sp = &s;
-            
-            bzero(sp,sizeof(sFrame));
-            sp->preamble = (char)0x0F; // NON PRINTABLE CHAR
-            sp->time[0] = (char)0x0;
-            sp->type = (char)ACCELEROMETER;
-            sp->v1[0] = (char)0xAA;  sp->v1[1] = (char)0xCA; sp->v1[2] = (char)0xCA; sp->v1[3] = (char)0xCA;
-            sp->v2[0] = (char)0xFF;  sp->v2[1] = (char)0xCA; sp->v2[2] = (char)0xCA; sp->v2[3] = (char)0xCA;
-            sp->v3[0] = (char)0xFF;  sp->v3[1] = (char)0xFF; sp->v3[2] = (char)0xCA; sp->v3[3] = (char)0xCA;
-            generateCheckSum(sp);
-            printf("Generating checksum\n");
-            send(sockfd,(char *) sp, sizeof(sFrame), 0);
-            printf("Sent a test frame\n");
-            */
+        rFrame r;
+        rFrame* req = &r;
 
-            continue;
-        }
+        enum state{
+            INITIAL_COMMAND,
+            FIRST_ARG,
+            SECOND_ARG,
+            INVALID_DATA,
+        } STATE;
+        STATE = INITIAL_COMMAND;
+        // TOKENIZE FRAMES
         
-        write(sockfd, buff, sizeof(buff));
-        bzero(buff, sizeof(buff));
-        read(sockfd, buff, sizeof(buff));
-        printf("From Server : %s", buff);
-        if ((strncmp(buff, "exit", 4)) == 0) {
-            printf("Client Exit...\n");
-            break;
+        char * tmp = buff;
+        printf("Parsing commmand...\n");
+        std::istringstream iss(buff);
+        while(iss.good())
+        { 
+            std::string tok;
+            iss >> tok;
+            const char * token = tok.c_str();
+
+            switch (STATE)
+            {
+                case INITIAL_COMMAND:
+                {
+                    if (strcmp(token,"/accel") == 0)
+                    {
+                        req->sensor = (char)REQ_ACCEL;
+                        STATE = FIRST_ARG;
+                    }
+                    else if (strcmp(token,"/magnet") == 0)
+                    {
+                        printf("You requested magnet\n");
+                        req->sensor = (char)REQ_MAGNET;
+                        STATE = FIRST_ARG;
+                    }
+                    else if (strcmp(token,"/gyro") == 0)
+                    {
+                        req->sensor = (char)REQ_GYRO;
+                        STATE = FIRST_ARG;
+                    }
+                    else // YOU DIDNT TYPE A COMMAND
+                    {
+                        STATE = INVALID_DATA;
+                    }
+                    break;
+                }
+                case FIRST_ARG:
+                {
+                    if (strcmp(token,"x") == 0)
+                    {
+                        req->axis = (char)X_AXIS;
+                        STATE = SECOND_ARG;
+                    }
+                    else if (strcmp(token,"y") == 0)
+                    {
+                        req->axis = (char)Y_AXIS;
+                        STATE = SECOND_ARG;
+                    }
+                    else if (strcmp(token,"z") == 0)
+                    {
+                        req->axis = (char)Z_AXIS;
+                        STATE = SECOND_ARG;
+                    }
+                    else if (strcmp(token,"xyz") == 0)
+                    {
+                        req->axis = (char)ALL_AXIS;
+                        STATE = SECOND_ARG;
+                    }
+                    else // YOU DIDNT TYPE A COMMAND
+                    {
+                        STATE = INVALID_DATA;
+                    }
+                    break;
+                }
+                case INVALID_DATA:
+                {
+                    break;
+                }
+            }
+            if (STATE == INVALID_DATA) { break ;}
         }
+
+        // SEND STRCUTURE IN THE SOCKET
+        req->preamble = (char)0xAA;
+        generateCheckSum(req);
+        send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
+        
     }
 }
  
@@ -92,7 +150,7 @@ int main( int argc, char** argv)
     if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr))
         != 0) {
         printf("connection with the server failed...\n");
-        exit(0);
+        // exit(0);
     }
     else
         printf("connected to the server..\n");

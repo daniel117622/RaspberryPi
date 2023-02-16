@@ -14,6 +14,8 @@
 #include "frame.cpp"
 #include "json.hpp"
 
+#define SOF 0xAA
+
 class TcpSocket
 {
    public:
@@ -56,35 +58,78 @@ class TcpSocket
       bzero(buffer,1024);
    }
 
-   void SendFrame(sFrame * s, json* data) 
+   void SendFrame(rFrame * prevReq, json* data) 
    {
       uint8_t msgLength = sizeof(sFrame);
       writePreamble(s);
       
       // GET THE DATA INTO SOME STRINGS
-     
+      if (prevReq->sensor == REQ_GYRO && prevReq->axis == X_AXIS ) // SingleAxis - SingleData
+      {
+         SingleAxisSingleDataFrame sendFrame;
+         sendFrame.preamble = SOF;
+         sendFrame.sensor = REQ_GYRO;
 
-      // CONVERT THOSE STRINGS INTO APROPIATE TYPES
+         char * fStr = (*data)["gyroscope"][0]["timestamp"];
+         float fVal = (float)atof(fStr);
+         sendFrame.timestamp = fVal;
 
+         char * fStr = (*data)["gyroscope"][0]["x"];
+         float fVal = (float)atof(fStr);
+         sendFrame.sData = fVal;
+         
 
+         generateCheckSum(sendFrame);
+         send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
+         return;
+      }
+      else if (prevReq->sensor == REQ_GYRO && prevReq->axis == Y_AXIS) // SingleAxis - SingleData
+      {
+         SingleAxisSingleDataFrame sendFrame;
+         sendFrame.preamble = SOF;
+         sendFrame.sensor = REQ_GYRO;
 
-      // PUT THOSE TYPE INTO THE FRAME
+         char * fStr = (*data)["gyroscope"][0]["timestamp"];
+         float fVal = (float)atof(fStr);
+         sendFrame.timestamp = fVal;
 
+         char * fStr = (*data)["gyroscope"][0]["y"];
+         float fVal = (float)atof(fStr);
+         sendFrame.sData = fVal;
+         
+
+         generateCheckSum(sendFrame);
+         send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
+         return;
+      }
+      else if (prevReq->sensor == REQ_GYRO && prevReq->axis == Z_AXIS) // SingleAxis - SingleData
+      {
+         SingleAxisSingleDataFrame sendFrame;
+         sendFrame.preamble = SOF;
+         sendFrame.sensor = REQ_GYRO;
+
+         char * fStr = (*data)["gyroscope"][0]["timestamp"];
+         float fVal = (float)atof(fStr);
+         sendFrame.timestamp = fVal;
+
+         char * fStr = (*data)["gyroscope"][0]["z"];
+         float fVal = (float)atof(fStr);
+         sendFrame.sData = fVal;
+         
+
+         generateCheckSum(sendFrame);
+         send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
+         return;
+      }
+
+          
 
       generateCheckSum(s); // Writes the checksum byte
       send( newsockfd , (char *) s , msgLength , 0 );
    }
 
-   void ReceiveFrame(sFrame * s) // THIS WILL BE USED IN THE CLIENT
-   {
-      uint8_t msgLength = sizeof(sFrame);
-      n = read(newsockfd,s,msgLength);
-      if (n < 0) {std::cout << "Error on read" << std::endl;}
-      if (validateCheckSum(s)) { std::cout << "Corrupted checksum" << std::endl; }
-      std::cout << (char)s->preamble << std::endl;
-   }
 
-   bool ReadCommand() // POINTER TO A FRAME THAT IS GOINF TO BE SENT TO THE CLIENT.
+   bool ReadCommand(rFrame* localFrame) // POINTER TO A FRAME THAT CONTAINS THE REQUEST FROM A CLIENT.
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
@@ -112,12 +157,9 @@ class TcpSocket
          return;
       }
       */
-      std::cout << "Sending frame data to user..." ;
+      memcpy(localFrame,buffer,sizeof(rFrame));
+      std::cout << "Writing to local frame..." ;
 
-      if (buffer[0] == '/')
-      {
-         std::cout << "User issued a command...." << std::endl;
-      }
    }
 
    ~TcpSocket()

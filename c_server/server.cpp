@@ -28,7 +28,8 @@ using json = nlohmann::json;
 
 // GLOBALS
 sFrame frameBuffer;
-json data; 
+json data;
+rFrame req; 
 
 int main(int* argc, char** argv)
 {
@@ -89,18 +90,8 @@ void * worker (void * parameter)
     thisObject.Accept();
     while (1)
     {
-        if (!thisObject.ReadCommand()) // USER DID NOT ISSUED A COMMAND
-        {
-            char * errorMessage = "Only commands supported at this moment";
-            thisObject.Send(errorMessage,strlen(errorMessage));
-        } else
-        {
-            thisObject.SendFrame(&frameBuffer, &json) // Process command fill the structure and send it to the client.
-            {
-
-            }
-        }
-
+        thisObject.ReadCommand(&req) // Writes to local rFrame
+        thisObject.SendFrame(&req,&json);
     }
 
     pthread_exit(0);
