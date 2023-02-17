@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <unordered_map>
+#include <fstream>
 
 
 #include "tcp.cpp"
@@ -36,7 +37,7 @@ int main(int* argc, char** argv)
     cout<<"Abriendo servidor"<<endl;
 
     std::ifstream f("data/example.json"); 
-    data = json::parse(f);
+    jdata = json::parse(f);
 
     int n = atoi(argv[1]);
 
