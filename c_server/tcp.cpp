@@ -13,7 +13,7 @@
 
 #include "frame.cpp"
 #include "json.hpp"
-
+using json = nlohmann::json;
 #define SOF 0xAA
 
 class TcpSocket
@@ -60,22 +60,23 @@ class TcpSocket
 
    void SendFrame(rFrame * prevReq, json* data) 
    {
+	std::string fStr;
+	float fVal;
       uint8_t msgLength = sizeof(sFrame);
-      writePreamble(s);
       
       // GET THE DATA INTO SOME STRINGS
-      if (prevReq->sensor == REQ_GYRO && prevReq->axis == X_AXIS ) // SingleAxis - SingleData
+      if ((prevReq->sensor == REQ_GYRO) && (prevReq->axis == X_AXIS )) // SingleAxis - SingleData
       {
          SingleAxisSingleDataFrame sendFrame;
          sendFrame.preamble = SOF;
          sendFrame.sensor = REQ_GYRO;
 
-         char * fStr = (*data)["gyroscope"][0]["timestamp"];
-         float fVal = (float)atof(fStr);
+         fStr = (*data)["gyroscope"][0]["timestamp"];
+         fVal = (float)atof(fStr.c_str());
          sendFrame.timestamp = fVal;
 
-         char * fStr = (*data)["gyroscope"][0]["x"];
-         float fVal = (float)atof(fStr);
+         fStr = (*data)["gyroscope"][0]["x"];
+         fVal = (float)atof(fStr.c_str());
          sendFrame.sData = fVal;
          
 
@@ -83,7 +84,8 @@ class TcpSocket
          send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
-      else if (prevReq->sensor == REQ_GYRO && prevReq->axis == Y_AXIS) // SingleAxis - SingleData
+/*
+      else if ((prevReq->sensor == REQ_GYRO) && (prevReq->axis == Y_AXIS)) // SingleAxis - SingleData
       {
          SingleAxisSingleDataFrame sendFrame;
          sendFrame.preamble = SOF;
@@ -102,7 +104,7 @@ class TcpSocket
          send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
-      else if (prevReq->sensor == REQ_GYRO && prevReq->axis == Z_AXIS) // SingleAxis - SingleData
+      else if ((prevReq->sensor == REQ_GYRO )&& (prevReq->axis == Z_AXIS)) // SingleAxis - SingleData
       {
          SingleAxisSingleDataFrame sendFrame;
          sendFrame.preamble = SOF;
@@ -121,7 +123,7 @@ class TcpSocket
          send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
-
+*/
           
 
       generateCheckSum(s); // Writes the checksum byte

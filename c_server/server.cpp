@@ -28,7 +28,7 @@ using json = nlohmann::json;
 
 // GLOBALS
 sFrame frameBuffer;
-json data;
+json jdata;
 rFrame req; 
 
 int main(int* argc, char** argv)
@@ -90,8 +90,8 @@ void * worker (void * parameter)
     thisObject.Accept();
     while (1)
     {
-        thisObject.ReadCommand(&req) // Writes to local rFrame
-        thisObject.SendFrame(&req,&json);
+        thisObject.ReadCommand(&req); // Writes to local rFrame
+        thisObject.SendFrame(&req,&jdata);
     }
 
     pthread_exit(0);
