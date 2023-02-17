@@ -73,14 +73,14 @@ class TcpSocket
 
          fStr = (*data)["gyroscope"][0]["timestamp"];
          fVal = (float)atof(fStr.c_str());
-         sendFrame.timestamp = fVal;
+         memcpy(sendFrame.timestamp,fVal,4*sizeof(char));
 
          fStr = (*data)["gyroscope"][0]["x"];
          fVal = (float)atof(fStr.c_str());
-         sendFrame.sData = fVal;
+         memcpy(sendFrame.sData,fVal,4*sizeof(char));
          
 
-         generateCheckSum(sendFrame);
+         // generateCheckSum(sendFrame);
          send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
