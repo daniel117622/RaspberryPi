@@ -98,13 +98,16 @@ typedef struct
     char checkSum;
 } XyzAllSensorsDataFrame;
 
-void generateCheckSum(sFrame *s) // GENERATE A CHECKSUM FOR THE GIVEN STRUCT
+void generateCheckSum(void *s) // GENERATE A CHECKSUM FOR THE GIVEN STRUCT
 {
     char * ptr = (char*) s; //START OF FRAME
-    char * endPtr = ptr + sizeof(sFrame); // END OF FRAME
-    char * tmp = ptr; // ITERATOR
 
+    char * endPtr = ptr + *(ptr + 2); // CONSULTING THE VALUE OF DATA SIZE. FRAMES MUST HAVE THIS FIELD DEFINED AT ALL TIMES
+    //char * endPtr = ptr + sizeof(sFrame); // END OF FRAME
+    
+    char * tmp = ptr; // ITERATOR
     char acc = 0;
+
     while(tmp != endPtr)
     {
         acc +=  *((char*)tmp); // accumlate individual bytes values
@@ -112,7 +115,7 @@ void generateCheckSum(sFrame *s) // GENERATE A CHECKSUM FOR THE GIVEN STRUCT
     }
 
     //STORE THE CHECKSUM
-    s->checkSum = (char) acc;
+    *endPtr = (char) acc; // LAST BIT
 }
 
 void writePreamble(sFrame *s)
