@@ -60,9 +60,9 @@ class TcpSocket
 
    void SendFrame(rFrame * prevReq, json* data) 
    {
-	std::string fStr;
-	float fVal;
-      uint8_t msgLength = sizeof(sFrame);
+	   std::string fStr;
+	   float fVal;
+      
       
       // GET THE DATA INTO SOME STRINGS
       if ((prevReq->sensor == REQ_GYRO) && (prevReq->axis == X_AXIS )) // SingleAxis - SingleData
@@ -80,7 +80,8 @@ class TcpSocket
          memcpy(sendFrame.sData,(void*)&fVal,4*sizeof(char));
          
 
-         // generateCheckSum(sendFrame);
+         
+         generateCheckSum((void*)&sendFrame); // Writes the checksum byte
          send(newsockfd,(char * ) &sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
@@ -126,8 +127,6 @@ class TcpSocket
 */
           
 
-      generateCheckSum(s); // Writes the checksum byte
-      send( newsockfd , (char *) s , msgLength , 0 );
    }
 
 
