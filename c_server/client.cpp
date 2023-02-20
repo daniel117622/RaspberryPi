@@ -128,11 +128,11 @@ void func(int sockfd)
         const char * buffer = (char *)req;
         
         printf("============== ALL FRAME ============\n");
-        printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
-        printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
-        printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
-        printf("AXIS: 0x%hhx\n",(unsigned char)buffer[3]);
-        printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[4]);
+        printf("PREAMBLE: 0x%hhx\n",(unsigned char) req->preamble);
+        printf("SENSOR: 0x%hhx\n",(unsigned char) req->sensor);
+        printf("DATA SIZE: 0x%hhx\n",(unsigned char) req->datasize);
+        printf("AXIS: 0x%hhx\n",(unsigned char)req->axis);
+        printf("CHECKSUM: 0x%hhx\n",(unsigned char)req->checksum);
 
 
         send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
