@@ -134,10 +134,8 @@ class TcpSocket
    {
       n = read(newsockfd,buffer,255);
       if (n < 0) {std::cout << "Error on read" << std::endl;}
-      /*
+      
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-      if (*buffer == (char)0x0F) // PREABMLE
-      {
          
          // DISPLAY THE FRAME 
          printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
@@ -147,7 +145,8 @@ class TcpSocket
          printf("V2: %f\n",(float)buffer[10]);
          printf("V3: %f\n",(float)buffer[14]);
          printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[18]);
-         // SAVE THE FRAME IN LOCAL
+         
+         /* SAVE THE FRAME IN LOCAL
          s->preamble = (unsigned char) buffer[0];
          s->type = (unsigned char) buffer[1];
          s->time = (float) buffer[2];
@@ -155,9 +154,9 @@ class TcpSocket
          s->v2 = (float) buffer[10];
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
-         return;
-      }
-      */
+         */
+      return;
+      
       memcpy(localFrame,buffer,sizeof(rFrame));
       std::cout << "Writing to local frame..." ;
 
