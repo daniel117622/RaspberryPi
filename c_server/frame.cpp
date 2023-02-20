@@ -31,6 +31,7 @@ typedef struct
 {
     char preamble;
     char sensor;
+    char datasize;
     char axis;
     char checksum;
 } rFrame;

@@ -138,13 +138,13 @@ class TcpSocket
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
          
          // DISPLAY THE FRAME 
-         printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
-         printf("TYPE: 0x%hhx\n",(unsigned char) buffer[1]);
-         printf("TIMESTAMP: %f\n",(float) buffer[2]);
-         printf("V1: %f\n",(float)buffer[6]);
-         printf("V2: %f\n",(float)buffer[10]);
-         printf("V3: %f\n",(float)buffer[14]);
-         printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[18]);
+      printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
+      printf("TYPE: 0x%hhx\n",(unsigned char) buffer[1]);
+      printf("TIMESTAMP: %f\n",(float) buffer[2]);
+      printf("V1: %f\n",(float)buffer[6]);
+      printf("V2: %f\n",(float)buffer[10]);
+      printf("V3: %f\n",(float)buffer[14]);
+      printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[18]);
          
          /* SAVE THE FRAME IN LOCAL
          s->preamble = (unsigned char) buffer[0];
@@ -155,7 +155,7 @@ class TcpSocket
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
          */
-      return;
+      return true;
       
       memcpy(localFrame,buffer,sizeof(rFrame));
       std::cout << "Writing to local frame..." ;

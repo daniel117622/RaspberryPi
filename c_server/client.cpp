@@ -120,6 +120,7 @@ void func(int sockfd)
 
         // SEND STRCUTURE IN THE SOCKET
         req->preamble = (char)0xAA;
+        req->datasize = sizeof(rFrame);
         generateCheckSum(req);
         send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
         
