@@ -120,10 +120,14 @@ void func(int sockfd)
 
         // SEND STRCUTURE IN THE SOCKET
         req->preamble = (char)0xAA;
+        printf("PREAMBLE: 0x%hhx\n",(unsigned char)req->preamble);
+        
         req->datasize = sizeof(rFrame);
         generateCheckSum(req);
 
         const char * buffer = (char *)req;
+        
+        printf("============== ALL FRAME ============\n");
         printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
         printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
         printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
