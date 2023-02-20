@@ -119,7 +119,7 @@ void func(int sockfd)
         }
 
         // SEND STRCUTURE IN THE SOCKET
-        req->preamble = (char)0xAA;
+        req->preamble = (unsigned char)0xAA;
         printf("PREAMBLE: 0x%hhx\n",(unsigned char)req->preamble);
         
         req->datasize = sizeof(rFrame);
