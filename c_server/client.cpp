@@ -122,6 +122,15 @@ void func(int sockfd)
         req->preamble = (char)0xAA;
         req->datasize = sizeof(rFrame);
         generateCheckSum(req);
+
+        const char * buffer = (char *)req;
+        printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
+        printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
+        printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
+        printf("AXIS: 0x%hhx\n",(unsigned char)buffer[3]);
+        printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[4]);
+
+
         send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
         
     }
