@@ -136,14 +136,14 @@ class TcpSocket
       if (n < 0) {std::cout << "Error on read" << std::endl;}
       
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-         
+#if DEBUG == 1    
       // DISPLAY THE FRAME 
       printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
       printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
       printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
       printf("AXIS: 0x%hhx\n",(unsigned char)buffer[3]);
       printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[4]);
-         
+#endif
          /* SAVE THE FRAME IN LOCAL
          s->preamble = (unsigned char) buffer[0];
          s->type = (unsigned char) buffer[1];

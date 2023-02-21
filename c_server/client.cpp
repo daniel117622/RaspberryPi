@@ -123,7 +123,8 @@ void func(int sockfd)
         printf("PREAMBLE: 0x%hhx\n",(unsigned char)req->preamble);
         
         req->datasize = sizeof(rFrame);
-        generateCheckSum(req);
+        //generateCheckSum(req);
+        req->checksum = (unsigned char)0xFE;
 
         const char * buffer = (char *)req;
         
