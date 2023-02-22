@@ -149,7 +149,7 @@ class TcpSocket
       if (n < 0) {std::cout << "Error on read" << std::endl;}
       
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-#if DEBUG == 1    
+    
       // DISPLAY THE FRAME 
 #if DEBUG == 1
       printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
