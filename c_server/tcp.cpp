@@ -90,7 +90,7 @@ class TcpSocket
          
          sendFrame.checkSum = 0x42;
          send(newsockfd,(char * ) &sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
-         return;
+         
       }
       else
       {
@@ -137,7 +137,7 @@ class TcpSocket
          send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
-*/
+*/    return;
           
 
    }
