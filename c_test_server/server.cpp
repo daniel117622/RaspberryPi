@@ -8,35 +8,97 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <unordered_map>
+#include <fstream>
 
-#define MAX 80
-#define PORT 64001
-
-#include "tcp.h"
-#include "json.h"
+#include "tcp.cpp"
 
 #include <list>
 #include <iterator>
+#include <signal.h>
+
+
+
+void * sum_to_n(void * parameter);
+void * worker(void * parameter);
+void sig_handler(int signum);
 
 using namespace std;
-int main(int* argc, int** argv)
+using json = nlohmann::json;
+
+// GLOBALS
+sFrame frameBuffer;
+json jdata;
+rFrame req; 
+
+int main(int* argc, char** argv)
 {
-    cout<<"Hola mundo"<<endl;
+    cout<<"Abriendo servidor"<<endl;
 
-    list<GenericData> c1,c2,c3;
-    unordered_map< string , list<GenericData>* > map;
+    std::ifstream f("data/example.json"); 
+    jdata = json::parse(f);
 
-    map.insert({string("gyroscope"),     &c1});
-    map.insert({string("accelerometer"), &c2});
-    map.insert({string("magnetometer"),  &c3});
+    int n = atoi(argv[1]);
 
+    TcpSocket t1(n);
+    TcpSocket t2(n+1);
+    TcpSocket t3(n+2);
+    TcpSocket t4(n+3);
+
+    t1.Listen();
+    t2.Listen();
+    t3.Listen();
+    t4.Listen();
+
+    pthread_t thread_id1;
+    pthread_attr_t attr1;
+    pthread_attr_init(&attr1); 
+    pthread_create(&thread_id1,&attr1,worker,(void *)&t1);        
     
 
-    TcpSocket t1(64001);
-    t1.Listen();
-    t1.Accept();
-    t1.Send("Hola\n",5);
-    t1.Read();
-   
+    pthread_t thread_id2;
+    pthread_attr_t attr2;
+    pthread_attr_init(&attr2);
+    pthread_create(&thread_id2,&attr2,worker,(void *)&t2);        
+
+
+    pthread_t thread_id3;
+    pthread_attr_t attr3;
+    pthread_attr_init(&attr3);
+    pthread_create(&thread_id3,&attr3,worker,(void *)&t3);        
+
+
+    pthread_t thread_id4;
+    pthread_attr_t attr4;
+    pthread_attr_init(&attr4);
+    pthread_create(&thread_id4,&attr4,worker,(void *)&t4);   
+
+    
+    pthread_join(thread_id1,NULL);
+    pthread_join(thread_id2,NULL);
+    pthread_join(thread_id3,NULL);
+    pthread_join(thread_id4,NULL);        
+
+    while(1);
+
     return 0;
 }
+
+
+
+void * worker (void * parameter)
+{
+    TcpSocket thisObject = *((TcpSocket*) parameter);
+    thisObject.Accept();
+    while (1)
+    {
+        if ( !thisObject.ReadCommand(&req) ) {break;} // Writes to local rFrame
+        thisObject.SendFrame(&req,&jdata);
+    }
+
+    pthread_exit(0);
+}
+
+
+
+

@@ -16,8 +16,6 @@
 using json = nlohmann::json;
 #define SOF 0xAA
 
-#define DEBUG 1
-
 class TcpSocket
 {
    public:
@@ -62,9 +60,6 @@ class TcpSocket
 
    void SendFrame(rFrame * prevReq, json* data) 
    {
-#if DEBUG == 1
-         printf("ENTERING SENDFRAME FUNCTION/n");
-#endif
 	   std::string fStr;
 	   float fVal;
       
@@ -84,60 +79,13 @@ class TcpSocket
          fVal = (float)atof(fStr.c_str());
          memcpy(sendFrame.sData,(void*)&fVal,4*sizeof(char));
          
-#if DEBUG == 1
-         printf("SENDING GYRO X DATA/n");
-#endif
+
          
-         sendFrame.checkSum = 0x42;
+         generateCheckSum((void*)&sendFrame); // Writes the checksum byte
          send(newsockfd,(char * ) &sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
       }
-      else
-      {
-#if DEBUG == 1
-         printf("COULD NOT READ COMMAND FRAME/n");
-#endif
-      }
-/*
-      else if ((prevReq->sensor == REQ_GYRO) && (prevReq->axis == Y_AXIS)) // SingleAxis - SingleData
-      {
-         SingleAxisSingleDataFrame sendFrame;
-         sendFrame.preamble = SOF;
-         sendFrame.sensor = REQ_GYRO;
 
-         char * fStr = (*data)["gyroscope"][0]["timestamp"];
-         float fVal = (float)atof(fStr);
-         sendFrame.timestamp = fVal;
-
-         char * fStr = (*data)["gyroscope"][0]["y"];
-         float fVal = (float)atof(fStr);
-         sendFrame.sData = fVal;
-         
-
-         generateCheckSum(sendFrame);
-         send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
-         return;
-      }
-      else if ((prevReq->sensor == REQ_GYRO )&& (prevReq->axis == Z_AXIS)) // SingleAxis - SingleData
-      {
-         SingleAxisSingleDataFrame sendFrame;
-         sendFrame.preamble = SOF;
-         sendFrame.sensor = REQ_GYRO;
-
-         char * fStr = (*data)["gyroscope"][0]["timestamp"];
-         float fVal = (float)atof(fStr);
-         sendFrame.timestamp = fVal;
-
-         char * fStr = (*data)["gyroscope"][0]["z"];
-         float fVal = (float)atof(fStr);
-         sendFrame.sData = fVal;
-         
-
-         generateCheckSum(sendFrame);
-         send(newsockfd,(char * ) sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
-         return;
-      }
-*/
           
 
    }
@@ -146,18 +94,17 @@ class TcpSocket
    bool ReadCommand(rFrame* localFrame) // POINTER TO A FRAME THAT CONTAINS THE REQUEST FROM A CLIENT.
    {
       n = read(newsockfd,buffer,255);
-      if (n < 0) {std::cout << "Error on read" << std::endl;}
+      if (n < 0) {std::cout << "Error on read" << std::endl; return false;}
       
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
-#if DEBUG == 1    
+         
       // DISPLAY THE FRAME 
-#if DEBUG == 1
       printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
       printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
       printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
       printf("AXIS: 0x%hhx\n",(unsigned char)buffer[3]);
       printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[4]);
-#endif
+         
          /* SAVE THE FRAME IN LOCAL
          s->preamble = (unsigned char) buffer[0];
          s->type = (unsigned char) buffer[1];
@@ -167,11 +114,10 @@ class TcpSocket
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
          */
-      memcpy(localFrame,buffer,sizeof(rFrame));
-#if DEBUG == 1
-      std::cout << "Wrote to local frame...\n" ;
-#endif
       return true;
+      
+      memcpy(localFrame,buffer,sizeof(rFrame));
+      std::cout << "Writing to local frame..." ;
 
    }
 

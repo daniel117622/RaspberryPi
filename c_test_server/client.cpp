@@ -20,7 +20,6 @@
 void func(int sockfd)
 {
     char buff[80];
-    char recBuffer[80];
     // JSON STUFF
 
 
@@ -124,9 +123,9 @@ void func(int sockfd)
         printf("PREAMBLE: 0x%hhx\n",(unsigned char)req->preamble);
         
         req->datasize = sizeof(rFrame);
-        // generateCheckSum(req);
-        req->checksum = 0x69;
+        generateCheckSum(req);
 
+        const char * buffer = (char *)req;
         
         printf("============== ALL FRAME ============\n");
         printf("PREAMBLE: 0x%hhx\n",(unsigned char) req->preamble);
@@ -137,8 +136,6 @@ void func(int sockfd)
 
 
         send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
-
-        // PENDING A RECEIVE CALL.
         
     }
 }
