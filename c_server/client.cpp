@@ -20,6 +20,7 @@
 void func(int sockfd)
 {
     char buff[80];
+    char recBuffer[80];
     // JSON STUFF
 
 
@@ -136,6 +137,8 @@ void func(int sockfd)
 
 
         send(sockfd,(unsigned char*) req, sizeof(rFrame), NULL);
+
+        // PENDING A RECEIVE CALL.
         
     }
 }
