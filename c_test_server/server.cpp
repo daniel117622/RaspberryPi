@@ -79,6 +79,8 @@ int main(int* argc, char** argv)
     pthread_join(thread_id3,NULL);
     pthread_join(thread_id4,NULL);        
 
+    while(1);
+
     return 0;
 }
 
