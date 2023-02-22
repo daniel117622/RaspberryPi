@@ -49,7 +49,7 @@ Compilar json tests
 </br>
 
 Para solicitar cierta informacion es necesario utilizar la siguiente sintaxis: </br>
-/<dispositivo> <axis> </br> </br>
+/[dispositivo] [axis] </br> </br>
     
 <dispositivos> : /magnet /gyro /accel </br>
 <axis> : x, y, z, xyz </br>
