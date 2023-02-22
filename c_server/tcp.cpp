@@ -169,7 +169,7 @@ class TcpSocket
          */
       memcpy(localFrame,buffer,sizeof(rFrame));
 #if DEBUG == 1
-      std::cout << "Wrote to local frame...\n" ;
+       // std::cout << "Wrote to local frame...\n" ;
 #endif
       return true;
 
