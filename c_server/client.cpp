@@ -123,9 +123,9 @@ void func(int sockfd)
         printf("PREAMBLE: 0x%hhx\n",(unsigned char)req->preamble);
         
         req->datasize = sizeof(rFrame);
-        generateCheckSum(req);
+        // generateCheckSum(req);
+        req->checksum = 0x69;
 
-        const char * buffer = (char *)req;
         
         printf("============== ALL FRAME ============\n");
         printf("PREAMBLE: 0x%hhx\n",(unsigned char) req->preamble);
