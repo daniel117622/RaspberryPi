@@ -48,11 +48,11 @@ Compilar json tests
 3.- Abrir uno o mas clientes con ./client <PORT>
 </br>
 
-Para solicitar cierta informacion es necesario utilizar la siguiente sintaxis:
-/<dispositivo> <axis>
+Para solicitar cierta informacion es necesario utilizar la siguiente sintaxis: </br>
+/<dispositivo> <axis> </br> </br>
     
-<dispositivos> : /magnet /gyro /accel
-<axis> : x, y, z, xyz
+<dispositivos> : /magnet /gyro /accel </br>
+<axis> : x, y, z, xyz </br>
 
 ====================PRUEBA JSON====================
 </br>
