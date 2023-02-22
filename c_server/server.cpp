@@ -92,6 +92,9 @@ void * worker (void * parameter)
     while (1)
     {
         thisObject.ReadCommand(&req); // Writes to local rFrame
+#if DEBUG == 1
+        printf("Exited read command function/n");
+#endif
         thisObject.SendFrame(&req,&jdata);
     }
 

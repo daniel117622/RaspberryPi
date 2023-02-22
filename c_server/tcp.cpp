@@ -146,7 +146,7 @@ class TcpSocket
    bool ReadCommand(rFrame* localFrame) // POINTER TO A FRAME THAT CONTAINS THE REQUEST FROM A CLIENT.
    {
       n = read(newsockfd,buffer,255);
-      if (n < 0) {std::cout << "Error on read" << std::endl;}
+      if (n < 0) {std::cout << "Error on read" << std::endl; return false;}
       
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
     
