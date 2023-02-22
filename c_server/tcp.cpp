@@ -164,9 +164,7 @@ class TcpSocket
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
          */
-      pthread_mutex_lock(localFrame);
       memcpy(localFrame,buffer,sizeof(rFrame));
-      pthread_mutex_unlock(localFrame);
 #if DEBUG == 1
       std::cout << "Wrote to local frame...\n" ;
 #endif
