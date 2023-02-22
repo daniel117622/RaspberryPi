@@ -163,10 +163,11 @@ class TcpSocket
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
          */
-      return true;
+      
       
       memcpy(localFrame,buffer,sizeof(rFrame));
-      std::cout << "Writing to local frame..." ;
+      std::cout << "Writing to local frame...\n" ;
+      return true;
 
    }
 
