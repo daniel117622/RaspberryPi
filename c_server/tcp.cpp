@@ -16,6 +16,8 @@
 using json = nlohmann::json;
 #define SOF 0xAA
 
+#define DEBUG 1
+
 class TcpSocket
 {
    public:
@@ -79,11 +81,19 @@ class TcpSocket
          fVal = (float)atof(fStr.c_str());
          memcpy(sendFrame.sData,(void*)&fVal,4*sizeof(char));
          
-
+#if DEBUG == 1
+         printf("SENDING GYRO X DATA/n");
+#endif
          
-         generateCheckSum((void*)&sendFrame); // Writes the checksum byte
+         sendFrame.checkSum = 0x42;
          send(newsockfd,(char * ) &sendFrame, sizeof(SingleAxisSingleDataFrame), NULL);
          return;
+      }
+      else
+      {
+#if DEBUG == 1
+         printf("COULD NOT READ COMMAND FRAME/n");
+#endif
       }
 /*
       else if ((prevReq->sensor == REQ_GYRO) && (prevReq->axis == Y_AXIS)) // SingleAxis - SingleData
