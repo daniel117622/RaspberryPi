@@ -148,12 +148,13 @@ class TcpSocket
       // CHECK IF RECEIVED BUFFER CONTAINS THE CORRECT PREAMBLE.
          
       // DISPLAY THE FRAME 
+#if DEBUG == 1
       printf("PREAMBLE: 0x%hhx\n",(unsigned char) buffer[0]);
       printf("SENSOR: 0x%hhx\n",(unsigned char) buffer[1]);
       printf("DATA SIZE: 0x%hhx\n",(unsigned char) buffer[2]);
       printf("AXIS: 0x%hhx\n",(unsigned char)buffer[3]);
       printf("CHECKSUM: 0x%hhx\n",(unsigned char)buffer[4]);
-         
+#endif
          /* SAVE THE FRAME IN LOCAL
          s->preamble = (unsigned char) buffer[0];
          s->type = (unsigned char) buffer[1];
@@ -163,10 +164,12 @@ class TcpSocket
          s->v3 = (float) buffer[14];
          s->checkSum = (unsigned char)buffer[18];
          */
-      
-      
+      pthread_mutex_lock(localFrame);
       memcpy(localFrame,buffer,sizeof(rFrame));
-      std::cout << "Writing to local frame...\n" ;
+      pthread_mutex_unlock(localFrame);
+#if DEBUG == 1
+      std::cout << "Wrote to local frame...\n" ;
+#endif
       return true;
 
    }
