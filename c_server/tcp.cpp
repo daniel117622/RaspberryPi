@@ -62,6 +62,9 @@ class TcpSocket
 
    void SendFrame(rFrame * prevReq, json* data) 
    {
+#if DEBUG == 1
+         printf("ENTERING SENDFRAME FUNCTION/n");
+#endif
 	   std::string fStr;
 	   float fVal;
       
