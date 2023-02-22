@@ -128,5 +128,8 @@ bool validateCheckSum(sFrame *s)
         tmp++;
     }
     
-    if (s->checkSum == acc) { return true; } else { return false; }
+    if (s->checkSum == acc) 
+    { return true; 
+    } else { 
+    return false; }
 }
