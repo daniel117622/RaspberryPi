@@ -41,11 +41,18 @@ make main N="(numero a incremetar por 5)".
 </br>
 Compilar json tests
 </br>
-g++ -w -std=c++11 -pthread -o json_parser json.cpp json_parsing_test.cpp
+1.- Ejecutar ./compile.sh para generar los ejecutables
 </br>
-Servidor
+2.- Abrir el servidor en una consola ./server <PORT> 
 </br>
-g++ -w -std=c++11 -pthread -o server tcp.cpp server.cpp
+3.- Abrir uno o mas clientes con ./client <PORT>
+</br>
+
+Para solicitar cierta informacion es necesario utilizar la siguiente sintaxis:
+/<dispositivo> <axis>
+    
+<dispositivos> : /magnet /gyro /accel
+<axis> : x, y, z, xyz
 
 ====================PRUEBA JSON====================
 </br>
