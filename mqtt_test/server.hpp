@@ -10,10 +10,6 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-
-#include "frame.cpp"
-#include "json.hpp"
-using json = nlohmann::json;
 #define SOF 0xAA
 #define BUFFSIZE 4096
 class TcpSocket
