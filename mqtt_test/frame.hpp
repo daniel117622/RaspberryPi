@@ -7,4 +7,4 @@ typedef struct{
  uint8_t bProtocol;
  uint8_t bCleanS;
  uint16_t bKeepA;
-},mConnect
+}mConnect;
