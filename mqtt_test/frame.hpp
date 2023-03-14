@@ -46,4 +46,4 @@ typedef struct{
 typedef struct{
     uint8_t bType;
     uint16_t wLen;
-}fDisconnect
+}fDisconnect;
