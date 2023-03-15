@@ -47,3 +47,13 @@ typedef struct{
     uint8_t bType;
     uint16_t wLen;
 }fDisconnect;
+
+typedef struct{
+    uint8_t bType;
+    uint16_t wLen;
+}fPingresp;
+
+typedef struct{
+    uint8_t bType;
+    uint16_t wLen;
+}fPingreq;
