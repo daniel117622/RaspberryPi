@@ -8,12 +8,12 @@ int main()
 {
 	ClientSocket t1(PORT);
 	printf("Connecting to server. \n");
-	t1.Connect();	
+	// t1.Connect();	
 	printf("Sending struct. \n");
 	fConnect* sFrame = new fConnect();
-	char * name = "MQTT";
+	const char * name = "MQTT";
 	writefConnect(sFrame, name, 255);
-
+	printf("WriteConnect finished. \n");
+	printf("DEBUG\n"); 	
 	sendfConnect(*sFrame, &t1);
-
 }

@@ -21,6 +21,7 @@ public:
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
     int n;
+    int res;
 
     char buffer[BUFFSIZE];
     TcpSocket(int port)
@@ -35,7 +36,7 @@ public:
         serv_addr.sin_addr.s_addr = INADDR_ANY;
         serv_addr.sin_port = htons(port);
 
-        if (int res = bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)))
+        if ( (res = bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr))))
         {
             std::cout << "Error en bind" << std::endl;
         }
