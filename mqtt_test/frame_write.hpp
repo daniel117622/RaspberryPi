@@ -5,18 +5,15 @@
 #include "frame.hpp"
 #include "client_handler.hpp"
 
-void writefConnect(fConnect* frame , char * name, unsigned int keep_alive)
+void writefConnect(fConnect* frame , char * name, uint16_t keep_alive)
 {
     char protocolLevel = 0x4;
-    // memcpy( (void*) &frame->bProtocol, (void*) &protocolLevel, sizeof(char) );
     frame->bProtocol = 0x4;   
     uint16_t len = strlen(name);
-    memcpy( (void*) &frame->wLen, (void*) &len , 2 * sizeof(uint16_t) );
-    memcpy( (void*) &frame->cName, name, sizeof(char* )); // Only the pointer is copied
-    char connFlags = 0x2;
-    memcpy( (void*) &frame->bFlags, (void*) &connFlags, sizeof(char) );
-    uint16_t keep = keep_alive;
-    memcpy( (void*) &frame->bKeepA, (void*) &keep, sizeof(uint16_t) );
+    frame->wLen = len;
+    frame->cName = name;
+    frame->bFlags = 0x2;
+    frame->bKeepA = keep_alive;
 }
 
 void sendfConnect(fConnect frame, ClientSocket* t1)
