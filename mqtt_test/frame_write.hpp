@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include <stdint.h>
 
@@ -6,10 +5,11 @@
 #include "frame.hpp"
 #include "client_handler.hpp"
 
-void writefConnect(fConnect* frame ,const char * name, unsigned int keep_alive)
+void writefConnect(fConnect* frame , char * name, unsigned int keep_alive)
 {
     char protocolLevel = 0x4;
-    memcpy( (void*) &frame->bProtocol, (void*) &protocolLevel, sizeof(char) );
+    // memcpy( (void*) &frame->bProtocol, (void*) &protocolLevel, sizeof(char) );
+    frame->bProtocol = 0x4;   
     uint16_t len = strlen(name);
     memcpy( (void*) &frame->wLen, (void*) &len , 2 * sizeof(uint16_t) );
     memcpy( (void*) &frame->cName, name, sizeof(char* )); // Only the pointer is copied
@@ -21,13 +21,19 @@ void writefConnect(fConnect* frame ,const char * name, unsigned int keep_alive)
 
 void sendfConnect(fConnect frame, ClientSocket* t1)
 {
+	
+    
     uint8_t* protoFrame = (uint8_t*)malloc( sizeof(fConnect) - sizeof(char*) + frame.wLen );
-
+    
     memcpy( (void*) protoFrame, (void*) &frame.wLen, sizeof(uint16_t) ); // Writes first two bytes
     // Obtain the string
-    char * msgHolder = (char*)malloc( frame.wLen ); // Allocate the bytes specified in the length 
     
-    memcpy( msgHolder, frame.cName, frame.wLen );  
+    char * msgHolder = (char*)malloc( frame.wLen ); // Allocate the bytes specified in the length 
+    char mqtt[4];
+	printf("[%p] [%p] (%zd)\n", msgHolder, (frame.cName), sizeof(msgHolder) );    
+    printf("DEBUG\n");
+    memcpy( msgHolder, mqtt, frame.wLen );  
+	printf("DEBUG\n");     
     memcpy( (void*) (protoFrame + sizeof(uint16_t)), msgHolder, frame.wLen );
     
     memcpy( (void*) (protoFrame + sizeof(uint16_t) + frame.wLen) , (void*) &frame.bProtocol, sizeof(uint8_t) );

@@ -1,13 +1,15 @@
 #include <stdint.h>
 
+#pragma pack(push,1)
 typedef struct {
  uint16_t wLen;
  uint8_t bType; 
- char* cName;
  uint8_t bProtocol;
+ char* cName; 
  uint8_t bFlags;
  uint16_t bKeepA;
 } fConnect;
+#pragma pack(pop)
 
 typedef struct{
     uint16_t wLen;
