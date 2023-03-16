@@ -1,11 +1,11 @@
 #include <stdint.h>
 
 typedef struct {
- uint8_t bType;
  uint16_t wLen;
+ uint8_t bType; 
  char* cName;
  uint8_t bProtocol;
- uint8_t bCleanS;
+ uint8_t bFlags;
  uint16_t bKeepA;
 } fConnect;
 

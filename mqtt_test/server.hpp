@@ -70,13 +70,13 @@ public:
 
     void Send(char *msg, int len)
     {
-        msg[len] = '\n';
         send(sockfd, msg, len, 0);
-        bzero(buffer, 1024);
+
     }
 
     void Receive()
     {
+        bzero(buffer, 1024);
         recv(sockfd,buffer,BUFFSIZE,0);
     }
 
