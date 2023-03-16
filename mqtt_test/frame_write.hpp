@@ -1,7 +1,11 @@
-#include "frame.hpp"
+
 #include <string.h>
 #include <stdint.h>
+
 #include "server.hpp"
+#include "frame.hpp"
+#include "client_handler.hpp"
+
 void * writefConnect(fConnect* frame ,char * name, unsigned int keep_alive)
 {
     char protocolLevel = 0x4;
@@ -15,7 +19,7 @@ void * writefConnect(fConnect* frame ,char * name, unsigned int keep_alive)
     memcpy( (void*) frame->bKeepA, (void*) &keep, sizeof(uint16_t) );
 }
 
-void sendfConnect(fConnect frame, TcpSocket* t1)
+void sendfConnect(fConnect frame, ClientSocket* t1)
 {
     uint8_t* protoFrame = (uint8_t*)malloc( sizeof(fConnect) - sizeof(char*) + frame.wLen );
 
