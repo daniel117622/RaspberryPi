@@ -27,10 +27,7 @@ void sendfConnect(fConnect frame, ClientSocket* t1)
     
     char * msgHolder = (char*)malloc( frame.wLen ); // Allocate the bytes specified in the length 
     char mqtt[4];
-	printf("[%p] [%p] (%zd)\n", msgHolder, (frame.cName), sizeof(msgHolder) );    
-    printf("DEBUG\n");
-    memcpy( msgHolder, mqtt, frame.wLen );  
-	printf("DEBUG\n");     
+    memcpy( msgHolder, mqtt, frame.wLen );      
     memcpy( (void*) (protoFrame + sizeof(uint16_t)), msgHolder, frame.wLen );
     
     memcpy( (void*) (protoFrame + sizeof(uint16_t) + frame.wLen) , (void*) &frame.bProtocol, sizeof(uint8_t) );

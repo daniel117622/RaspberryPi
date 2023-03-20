@@ -49,8 +49,8 @@ public:
     }
     void Accept()
     {
-        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-        if (newsockfd < 0)
+        sockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+        if (sockfd < 0)
         {
             std::cout << "Error con accept" << std::endl;
             return;
@@ -60,8 +60,8 @@ public:
 
     void Connect(int PORT)
     {
-        newsockfd = connect(sockfd, (struct sockaddr*)&cli_addr, sizeof(cli_addr) );
-        if (newsockfd < 0)
+        res = connect(sockfd, (struct sockaddr*)&cli_addr, sizeof(cli_addr) );
+        if (res < 0)
         {
             std::cout << "Error con connect" << std::endl;
             return;
@@ -78,7 +78,8 @@ public:
     void Receive()
     {
         bzero(buffer, 1024);
-        recv(sockfd,buffer,BUFFSIZE,0);
+        int res = recv(sockfd,buffer,BUFFSIZE,0);
+        printf("Errno: %d\n", errno);
     }
 
     ~TcpSocket()
