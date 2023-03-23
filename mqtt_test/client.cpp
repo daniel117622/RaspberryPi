@@ -26,9 +26,11 @@ int main()
 	*t1.buffer = 0xC0;
 	*(t1.buffer + 1) = 0x00;
 	t1.Send(t1.buffer, 2);
-	if (*t1.buffer == 0xD0)
+	sleep(1);
+	t1.Receive();
+	if ((uint8_t)*t1.buffer == 0xD0)
 	{
-		printf("Server pinged back...");
+		printf("Server pinged back...\n\n");
 	}
 
 }

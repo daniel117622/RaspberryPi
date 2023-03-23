@@ -31,7 +31,7 @@ int main()
     while(1)
     {
         t1.Receive();
-        if ( *t1.buffer == 0xC0 ) // PING REQUEST
+        if ( (uint8_t)*t1.buffer == 0xC0 ) // PING REQUEST
         {
             *t1.buffer = 0xD0;
             *( t1.buffer + 1) = 0x00;
