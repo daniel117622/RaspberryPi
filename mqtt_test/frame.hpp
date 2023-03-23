@@ -2,11 +2,15 @@
 
 #pragma pack(push,1)
 typedef struct {
+ uint8_t bType;
  uint16_t wLen;
- uint8_t bProtocol;
- char* cName;  
+ uint16_t wProtNameLen;
+ char sProtoName[4];  
+ uint8_t bVersion;
  uint8_t bFlags;
  uint16_t bKeepA;
+ uint16_t wClientLen;
+ char* sClientID;
 } fConnect;
 #pragma pack(pop)
 

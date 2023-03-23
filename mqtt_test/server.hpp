@@ -15,17 +15,18 @@
 class TcpSocket
 {
 public:
-    int sockfd, newsockfd, portno,connect_sockfd;
+    int sockfd, portno,connect_sockfd;
     socklen_t clilen;
 
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;
     int n;
     int res;
-
+    int _port;
     char buffer[BUFFSIZE];
     TcpSocket(int port)
     {
+        _port = port;
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd < 0)
         {
@@ -34,14 +35,15 @@ public:
         bzero((char *)&serv_addr, sizeof(serv_addr));
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = INADDR_ANY;
-        serv_addr.sin_port = htons(port);
-
+        serv_addr.sin_port = htons(_port);
+        int optval = 1;
+        setsockopt(sockfd,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
         if ( (res = bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr))))
         {
             std::cout << "Error en bind" << std::endl;
         }
-        int optval = 1;
-        setsockopt(sockfd,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+
+        
     }
     void Listen()
     {
@@ -71,20 +73,15 @@ public:
 
     void Send(char *msg, int len)
     {
-        send(sockfd, msg, len, 0);
+        int res = send(sockfd, msg, len, 0);
 
     }
 
     void Receive()
     {
-        bzero(buffer, 1024);
+        bzero(buffer, BUFFSIZE);
         int res = recv(sockfd,buffer,BUFFSIZE,0);
         printf("Errno: %d\n", errno);
     }
 
-    ~TcpSocket()
-    {
-        close(newsockfd);
-        close(sockfd);
-    }
 };

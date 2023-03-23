@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#define BUFFERSIZE 1024
+#define BUFFERSIZE 4096
 class ClientSocket
 {
     public:
@@ -28,7 +28,10 @@ class ClientSocket
         if ( inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0 )
         {
             printf("\nInvalid address.\n");
-        }                        
+        }
+        int optval = 1;
+        setsockopt(sockfd,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+                        
     }
     void Connect()
     {
@@ -41,7 +44,14 @@ class ClientSocket
     }
     void Send(char * msg, size_t len)
     {
-        send(sockfd, msg, len, 0);
+        int res = send(sockfd, msg, len, 0);
+    }
+
+    void Receive()
+    {
+        int res = 0;
+        bzero(buffer, BUFFERSIZE);
+        res = recv(sockfd,buffer,BUFFERSIZE,0);
     }
 
 };

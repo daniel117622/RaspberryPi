@@ -9,8 +9,17 @@ int main()
 	ClientSocket t1(PORT);
 	t1.Connect();	
 	printf("Sending struct. \n");
-	fConnect sFrame = {.wLen = 0x0,  .bProtocol = 0x0, .cName = NULL,  .bFlags = 0x0, .bKeepA = 0x0 };
-	char * name = "MQTT";
-	writefConnect(&sFrame, name, 255);
-	sendfConnect(sFrame, &t1);
+	fConnect sFrame;
+	char name[] = "A long name";
+	writefConnect(&sFrame, name, sizeof(name) , 255);
+	sendfConnect(sFrame, t1);
+	sleep(1); // Wait for server to reach send state.
+	t1.Receive();
+	printf("====================\n");
+	printf("B1: 0x%hx\n", (uint8_t) *(t1.buffer + 0));
+	printf("B2: 0x%hx\n", (uint8_t) *(t1.buffer + 1));
+	printf("B3: 0x%hx\n", (uint8_t) *(t1.buffer + 2));
+	printf("B4: 0x%hx\n", (uint8_t) *(t1.buffer + 3));
+	printf("====================\n");
+
 }

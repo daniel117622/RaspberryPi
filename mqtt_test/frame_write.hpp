@@ -5,61 +5,46 @@
 #include "frame.hpp"
 #include "client_handler.hpp"
 
-void writefConnect(fConnect* frame , char * name, uint16_t keep_alive)
+void writefConnect(fConnect* frame , char * clientName, uint16_t lenString , uint16_t keep_alive)
 {
-    char protocolLevel = 0x4;
-    frame->bProtocol = 0x4;   
-    uint16_t len = strlen(name);
-    frame->wLen = len;
-    frame->cName = name;
-    frame->bFlags = 0x2;
+    frame->bType = 0x10;
+    frame->wLen = lenString;
+    frame->wProtNameLen = 0x04;
+    frame->sProtoName[0] = 'M' ; frame->sProtoName[1] = 'Q' ; frame->sProtoName[2] = 'T' ; frame->sProtoName[3] = 'T' ; 
+    frame->bVersion = 0x04;
+    frame->bFlags = 0x02;
     frame->bKeepA = keep_alive;
+    frame->wClientLen = lenString;
+    frame->sClientID = clientName;
 }
 
-void sendfConnect(fConnect frame, ClientSocket* t1)
+void sendfConnect(fConnect frame, ClientSocket t1)
 {
 	
-    
-    uint8_t* protoFrame = (uint8_t*)malloc( sizeof(fConnect) - sizeof(char*) + frame.wLen );
-    
-    memcpy( (void*) protoFrame, (void*) &frame.wLen, sizeof(uint16_t) ); // Writes first two bytes
-    // Obtain the string
-    
-    char * msgHolder = (char*)malloc( frame.wLen ); // Allocate the bytes specified in the length 
-    char mqtt[4];
-    memcpy( msgHolder, mqtt, frame.wLen );      
-    memcpy( (void*) (protoFrame + sizeof(uint16_t)), msgHolder, frame.wLen );
-    
-    memcpy( (void*) (protoFrame + sizeof(uint16_t) + frame.wLen) , (void*) &frame.bProtocol, sizeof(uint8_t) );
-    memcpy( (void*) (protoFrame + sizeof(uint16_t) + frame.wLen + sizeof(uint8_t)) , (void*) &frame.bFlags, sizeof(uint8_t) );
-    memcpy( (void*) (protoFrame + sizeof(uint16_t) + frame.wLen + sizeof(uint8_t) + sizeof(uint8_t)) , (void*) &frame.bKeepA, sizeof(uint16_t) );
+    uint8_t* protoFrame = (uint8_t*)malloc( sizeof(fConnect) - sizeof(char*) + frame.wClientLen );
+    memcpy(  (void*) (protoFrame), (void*) &frame, sizeof(fConnect) - sizeof(char*) );
+    memcpy(  (void*) (protoFrame + sizeof(fConnect) - sizeof(char*)), frame.sClientID,  frame.wClientLen);
+    t1.Send( (char*)protoFrame, sizeof(fConnect) - sizeof(char*) + frame.wClientLen  );    
 
-    t1->Send( (char*) protoFrame,  sizeof(fConnect) - sizeof(char*) + frame.wLen );
 }
-
 void printConnectFrame(TcpSocket t1) 
 {
     printf("=============================\n");
     // When a TcpSocket object receives, it saves its contents on its internal buffer
-    uint16_t len;
-    memcpy( &len, (void*) t1.buffer, sizeof(uint16_t) );
-    printf("Length: 0x%hX\n", len);
+    uint8_t bFrameType = 0;
+    memcpy( &bFrameType,    &((fConnect*)t1.buffer)->bType  , sizeof(uint8_t) );
+    printf("Frame type: 0x%hx\n", bFrameType);
 
-    char * msgHolder = (char*)malloc( len + 1 );
-    memcpy( msgHolder, &t1.buffer[sizeof(uint16_t)], len + 1 );
-    msgHolder[len] = '\0';
-    printf("Name: %s\n", msgHolder);
+    uint16_t msgLen = 0;
+    memcpy( &msgLen, &((fConnect*)t1.buffer)->wLen  , sizeof(uint16_t) );
+    printf("Message length: 0x%hx\n", msgLen);
 
-    uint8_t protoLevel;
-    memcpy( &protoLevel, t1.buffer + sizeof(uint16_t) + len, sizeof(uint8_t));
-    printf("Protocol Level: 0x%hx\n", protoLevel);
+    uint16_t keepAlive = 0;
+    memcpy( &keepAlive, &((fConnect*)t1.buffer)->bKeepA , sizeof(uint16_t) );
+    printf("Keep Alive 0x%hx\n", keepAlive);
 
-    uint8_t cFlags;
-    memcpy( &cFlags, t1.buffer + sizeof(uint16_t) + len + sizeof(uint8_t), sizeof(uint8_t));
-    printf("Flags: 0x%hx\n", cFlags);
-
-    uint16_t keepAlive;
-    memcpy( &keepAlive, t1.buffer + sizeof(uint16_t) + len + 2*sizeof(uint8_t), sizeof(uint8_t));
-    printf("Keep Alive: 0x%hx\n", keepAlive);
+    char * clientId = (char*) malloc( ((fConnect*)t1.buffer)->wClientLen );
+    memcpy(clientId, t1.buffer + sizeof(fConnect) - sizeof(char*) , msgLen );
+    printf("Client ID: %s\n", clientId);
     printf("=============================\n");
 }
