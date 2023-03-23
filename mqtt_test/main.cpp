@@ -28,5 +28,20 @@ int main()
         t1.Send(t1.buffer, sizeof(fConnack));
     }
 
+    while(1)
+    {
+        t1.Receive();
+        if ( *t1.buffer == 0xC0 ) // PING REQUEST
+        {
+            *t1.buffer = 0xD0;
+            *( t1.buffer + 1) = 0x00;
+            t1.Send(t1.buffer, 2);
+        }
+        else
+        {
+            break;
+        }
+    }
+
     return 0;
 }
