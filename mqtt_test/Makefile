@@ -1,6 +1,26 @@
+
+Settings
+Settings
+Information
+Makefile Generator
+     
+template:
+Α.Delis (UOA), separate compilation, multiple project support (recommended)
+standard:
+undefined (system default)
+​
+Header and source files:
+main.cpp frame_write.hpp
+client.cpp frame_write.hpp
+output file(s):
+server client
+clean command:
+rm -f $(OBJS) $(OUT)
+Output
+     
 OBJS	= main.o client.o
 SOURCE	= main.cpp client.cpp
-HEADER	= 
+HEADER	= frame_write.hpp
 OUT	= server client
 CC	 = g++
 FLAGS	 = -g -c
@@ -17,4 +37,5 @@ client.o: client.cpp
 
 
 clean:
-	rm -f $(OBJS) $(OUT
+	rm -f $(OBJS) $(OUT)
+© 2023 Nicomedes system by assistedcoding.eu
