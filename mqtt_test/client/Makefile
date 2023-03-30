@@ -1,7 +1,7 @@
-OBJS	= main.o
-SOURCE	= main.cpp
+OBJS	= client.o
+SOURCE	= client.cpp
 HEADER	= 
-OUT	= server
+OUT	= client
 CC	 = g++
 FLAGS	 = -g -c
 LFLAGS	 = 
@@ -9,8 +9,8 @@ LFLAGS	 =
 all: $(OBJS)
 	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
 
-main.o: main.cpp
-	$(CC) $(FLAGS) main.cpp 
+client.o: client.cpp
+	$(CC) $(FLAGS) client.cpp 
 
 
 clean:
