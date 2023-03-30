@@ -4,11 +4,15 @@ using namespace std;
 #define MAXCONN 256
 #define DEBUG 1
 
-int main() 
-{    
+void * timer_func(void * arg)
+{
+    return NULL;
+}
 
+void * worker(void * arg)
+{
     printf("Server started.\n");
-    TcpSocket t1(PORT);
+    TcpSocket t1 = *((TcpSocket*)arg);
     t1.Listen();
     printf("Accepting...\n");
     t1.Accept();
@@ -17,6 +21,11 @@ int main()
     // Validacion.
     uint16_t KA = *((uint16_t*)(t1.buffer + 2*sizeof(uint16_t) + *((uint16_t*)t1.buffer) + 2*sizeof(uint8_t)));
     uint8_t bType = *((uint8_t*)(t1.buffer + sizeof(uint16_t)));
+    int timer = KA;
+
+    pthread_t TID;
+	pthread_create(&TID, NULL,  timer_func, &timer);
+
     if (bType == 0x0) // If is a connect packet
     {
         fConnack frame;
@@ -42,6 +51,15 @@ int main()
             break;
         }
     }
+}
+int main() 
+{   
+
+    TcpSocket tc1 = TcpSocket(PORT);
+    TcpSocket tc2 = TcpSocket(PORT);
+	pthread_t TID[2];
+	pthread_create(&TID[0], NULL,  worker, (void*)&tc1);
+    pthread_join(TID[0],NULL);
 
     return 0;
 }

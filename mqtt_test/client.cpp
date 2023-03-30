@@ -4,7 +4,7 @@
 #define PORT 64001
 #define SA struct sockaddr
 
-int main()
+void *worker(void * arg)
 {
 	ClientSocket t1(PORT);
 	t1.Connect();	
@@ -23,14 +23,27 @@ int main()
 	printf("====================\n");
 
 	sleep(1);
+
+
 	*t1.buffer = 0xC0;
 	*(t1.buffer + 1) = 0x00;
 	t1.Send(t1.buffer, 2);
 	sleep(1);
-	t1.Receive();
-	if ((uint8_t)*t1.buffer == 0xD0)
+	while(1)
 	{
-		printf("Server pinged back...\n\n");
+		t1.Receive();
+		if ((uint8_t)*t1.buffer == 0xD0)
+		{
+			printf("Server pinged back...\n\n");
+		}
+		t1.Send(t1.buffer,69);	
 	}
+} 
 
+int main()
+{
+	pthread_t TID;
+	pthread_create(&TID, NULL,  worker, NULL);
+	pthread_join(TID,NULL);
+	return 0;
 }

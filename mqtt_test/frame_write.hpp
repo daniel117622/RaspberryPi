@@ -43,6 +43,14 @@ void printConnectFrame(TcpSocket t1)
     memcpy( &keepAlive, &((fConnect*)t1.buffer)->bKeepA , sizeof(uint16_t) );
     printf("Keep Alive 0x%hx\n", keepAlive);
 
+    uint8_t bVersion = 0;
+    memcpy( &bVersion, &((fConnect*)t1.buffer)->bVersion , sizeof(uint16_t) );
+    printf("Protocol version 0x%hx\n", bVersion);
+
+    uint8_t bFlags = 0;
+    memcpy( &bFlags, &((fConnect*)t1.buffer)->bFlags , sizeof(uint16_t) );
+    printf("Flags 0x%hx\n", bVersion);
+
     char * clientId = (char*) malloc( ((fConnect*)t1.buffer)->wClientLen );
     memcpy(clientId, t1.buffer + sizeof(fConnect) - sizeof(char*) , msgLen );
     printf("Client ID: %s\n", clientId);
