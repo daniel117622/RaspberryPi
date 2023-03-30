@@ -15,3 +15,6 @@ server.o: server.cpp
 
 clean:
 	rm -f $(OBJS) $(OUT)
+
+run: $(OUT)
+	./$(OUT)
