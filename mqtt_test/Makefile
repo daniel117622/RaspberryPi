@@ -3,7 +3,7 @@ SOURCE	= main.cpp client.cpp
 HEADER	= 
 OUT	= server client
 CC	 = g++
-FLAGS	 = -g -c -Wall
+FLAGS	 = -g -c
 LFLAGS	 = 
 
 all: $(OBJS)
@@ -17,4 +17,4 @@ client.o: client.cpp
 
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f $(OBJS) $(OUT
