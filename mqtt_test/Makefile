@@ -1,9 +1,9 @@
 OBJS	= main.o client.o
 SOURCE	= main.cpp client.cpp
 HEADER	= 
-OUT	= server
+OUT	= server client
 CC	 = g++
-FLAGS	 = -g -c
+FLAGS	 = -g -c -Wall
 LFLAGS	 = 
 
 all: $(OBJS)
@@ -18,6 +18,3 @@ client.o: client.cpp
 
 clean:
 	rm -f $(OBJS) $(OUT)
-
-run: $(OUT)
-	./$(OUT)
