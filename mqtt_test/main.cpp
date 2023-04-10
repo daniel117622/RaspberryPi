@@ -10,21 +10,19 @@ void * timer_func(void * arg)
 }
 
 void * worker(void * arg)
+
 {
-    printf("Server started.\n");
     TcpSocket t1 = *((TcpSocket*)arg);
     t1.Listen();
-    printf("Accepting...\n");
     t1.Accept();
     t1.Receive();
     printConnectFrame(t1);        
     // Validacion.
-    uint16_t KA = *((uint16_t*)(t1.buffer + 2*sizeof(uint16_t) + *((uint16_t*)t1.buffer) + 2*sizeof(uint8_t)));
+    uint16_t KA = ((fConnect*)t1.buffer)->bKeepA;
     uint8_t bType = *((uint8_t*)(t1.buffer + sizeof(uint16_t)));
     int timer = KA;
 
     pthread_t TID;
-	pthread_create(&TID, NULL,  timer_func, &timer);
 
     if (bType == 0x0) // If is a connect packet
     {
@@ -46,20 +44,32 @@ void * worker(void * arg)
             *( t1.buffer + 1) = 0x00;
             t1.Send(t1.buffer, 2);
         }
+        else if ( (uint8_t) *t1.buffer == 0x82 ) // Subscribe packet
+        {
+            validate_and_send_suback(t1);
+        }
         else
         {
+            printf("Client disconnected\n");
             break;
         }
     }
 }
 int main() 
 {   
+    while(1)
+    {
+        TcpSocket tc1 = TcpSocket(PORT);
+        TcpSocket tc2 = TcpSocket(PORT);
+        pthread_t TID[2];
 
-    TcpSocket tc1 = TcpSocket(PORT);
-    TcpSocket tc2 = TcpSocket(PORT);
-	pthread_t TID[2];
-	pthread_create(&TID[0], NULL,  worker, (void*)&tc1);
-    pthread_join(TID[0],NULL);
+        pthread_create(&TID[0], NULL,  worker, (void*)&tc1);
+        pthread_create(&TID[1], NULL,  worker, (void*)&tc2);
 
+        pthread_join(TID[0],NULL);
+        pthread_join(TID[1],NULL);        
+    }
+
+    
     return 0;
 }

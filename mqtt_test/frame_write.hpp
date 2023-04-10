@@ -20,13 +20,63 @@ void writefConnect(fConnect* frame , char * clientName, uint16_t lenString , uin
 
 void sendfConnect(fConnect frame, ClientSocket t1)
 {
-	
     uint8_t* protoFrame = (uint8_t*)malloc( sizeof(fConnect) - sizeof(char*) + frame.wClientLen );
     memcpy(  (void*) (protoFrame), (void*) &frame, sizeof(fConnect) - sizeof(char*) );
     memcpy(  (void*) (protoFrame + sizeof(fConnect) - sizeof(char*)), frame.sClientID,  frame.wClientLen);
-    t1.Send( (char*)protoFrame, sizeof(fConnect) - sizeof(char*) + frame.wClientLen  );    
+    t1.Send( (char*)protoFrame, sizeof(fConnect) - sizeof(char*) + frame.wClientLen  ); 
+    free(protoFrame);   
 
 }
+
+void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t topics_len)
+{
+    // Size of packet identifier + protocol name + lenght + char bytes of each topic up to 3
+    int total_size = 3; // fixed_header + packet_id
+    for (int i = 0 ; i < topics_len ; i++)
+    {
+        total_size += (3 + strlen(*(topics + i))); // length + string + qos
+    }
+
+    uint8_t * protoFrame = (uint8_t*) malloc(total_size);
+    ((fSubscribe*) protoFrame)->fixed_header = 0x82;
+    ((fSubscribe*) protoFrame)->packet_id = 0x6999;
+
+    uint8_t * curr = protoFrame + sizeof(uint8_t) + sizeof(uint16_t);
+    for (int i = 0 ; i < topics_len ; i++)
+    {
+        uint16_t this_topic_len = strlen(*(topics+i));
+        memcpy(curr, &this_topic_len, 2);
+        curr = curr + 2;
+        memcpy(curr, *(topics+i) , 2);
+        curr = curr + 2 + this_topic_len;
+        uint8_t QoS = 0x1;
+        memcpy(curr, &QoS, 1);
+        curr = curr + 1;
+    }
+
+
+    t1.Send((char*) protoFrame, total_size);
+    printf("Sent subscribe packet\n");
+    free(protoFrame);
+
+}
+
+void validate_and_send_suback(TcpSocket t1)
+{
+    char * sendBuffer = (char*) malloc( 128 );
+
+    uint8_t * curr = (uint8_t*)t1.buffer;
+    curr = curr + 1;
+    
+    uint16_t this_topic_len = *((uint16_t*)curr);
+    curr = curr + 2;
+    
+    memcpy(sendBuffer + 1, curr, this_topic_len);
+
+
+    return;
+}
+
 void printConnectFrame(TcpSocket t1) 
 {
     printf("=============================\n");
@@ -49,10 +99,11 @@ void printConnectFrame(TcpSocket t1)
 
     uint8_t bFlags = 0;
     memcpy( &bFlags, &((fConnect*)t1.buffer)->bFlags , sizeof(uint16_t) );
-    printf("Flags 0x%hx\n", bVersion);
+    printf("Flags 0x%hx\n", bFlags);
 
-    char * clientId = (char*) malloc( ((fConnect*)t1.buffer)->wClientLen );
+    char * clientId = (char*) malloc( msgLen );
     memcpy(clientId, t1.buffer + sizeof(fConnect) - sizeof(char*) , msgLen );
     printf("Client ID: %s\n", clientId);
     printf("=============================\n");
+    free(clientId);
 }

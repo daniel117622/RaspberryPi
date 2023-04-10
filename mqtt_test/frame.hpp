@@ -28,11 +28,9 @@ typedef struct{
 }fConnack;
 
 typedef struct{
-    uint16_t wLenA;
-    char* cName;
-    uint8_t bQosA;
-    uint16_t wLenB;
-    uint8_t bQosB;
+    uint8_t fixed_header;
+    uint16_t packet_id;
+    uint16_t bLenA;
 }fSubscribe;
 
 typedef struct{

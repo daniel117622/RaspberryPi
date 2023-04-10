@@ -37,7 +37,7 @@ public:
         serv_addr.sin_addr.s_addr = INADDR_ANY;
         serv_addr.sin_port = htons(_port);
         int optval = 1;
-        setsockopt(sockfd,SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+        setsockopt(sockfd,SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(int));
         if ( (res = bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr))))
         {
             std::cout << "Error en bind" << std::endl;
@@ -81,7 +81,6 @@ public:
     {
         bzero(buffer, BUFFSIZE);
         int res = recv(sockfd,buffer,BUFFSIZE,0);
-        printf("Errno: %d\n", errno);
     }
 
 };

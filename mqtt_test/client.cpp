@@ -4,13 +4,13 @@
 #define PORT 64001
 #define SA struct sockaddr
 
-void *worker(void * arg)
+int main()
 {
 	ClientSocket t1(PORT);
 	t1.Connect();	
 	printf("Sending struct. \n");
 	fConnect sFrame;
-	char name[] = "A long name";
+	char name[] = "4115 0226 6338 5446 Cobrese :)";
 	writefConnect(&sFrame, name, sizeof(name) , 255);
 	sendfConnect(sFrame, t1);
 	sleep(1); // Wait for server to reach send state.
@@ -29,21 +29,19 @@ void *worker(void * arg)
 	*(t1.buffer + 1) = 0x00;
 	t1.Send(t1.buffer, 2);
 	sleep(1);
+	
 	while(1)
 	{
 		t1.Receive();
 		if ((uint8_t)*t1.buffer == 0xD0)
 		{
 			printf("Server pinged back...\n\n");
+			close(t1.sockfd);
+			break;
 		}
-		t1.Send(t1.buffer,69);	
+		// What to send?
+		// t1.Send(t1.buffer,69);	
 	}
-} 
 
-int main()
-{
-	pthread_t TID;
-	pthread_create(&TID, NULL,  worker, NULL);
-	pthread_join(TID,NULL);
 	return 0;
 }
