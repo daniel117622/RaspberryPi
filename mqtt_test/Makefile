@@ -14,7 +14,7 @@ MAIN_OBJ = $(MAIN_SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 CLIENT_OBJ = $(CLIENT_SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 MAIN_TARGET = $(BIN_DIR)/main
-CLIENT_TARGET = $(BIN_DIR)/client
+CLIENT_TARGET = $(BIN_DIR)/client 
 
 .PHONY: all clean
 

@@ -52,7 +52,7 @@ void * worker(void * arg)
         {
             printf("Client disconnected\n");
             break;
-        }
+        } 
     }
 }
 int main() 
