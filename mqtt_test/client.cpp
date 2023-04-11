@@ -33,12 +33,17 @@ int main()
 	while(1)
 	{
 		t1.Receive();
+
 		if ((uint8_t)*t1.buffer == 0xD0)
 		{
 			printf("Server pinged back...\n\n");
+			char * names[] = {"uno","dos","tres"};
+			char ** topics = names;
+			write_and_send_subscribe_packet(t1,topics,3);	
 			close(t1.sockfd);
 			break;
 		}
+
 		// What to send?
 		// t1.Send(t1.buffer,69);	
 	}

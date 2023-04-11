@@ -32,6 +32,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
 {
     // Size of packet identifier + protocol name + lenght + char bytes of each topic up to 3
     int total_size = 3; // fixed_header + packet_id
+
     for (int i = 0 ; i < topics_len ; i++)
     {
         total_size += (3 + strlen(*(topics + i))); // length + string + qos
@@ -39,19 +40,23 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
 
     uint8_t * protoFrame = (uint8_t*) malloc(total_size);
     ((fSubscribe*) protoFrame)->fixed_header = 0x82;
-    ((fSubscribe*) protoFrame)->packet_id = 0x6999;
+    ((fSubscribe*) protoFrame)->total_size = 0x02;
+    ((fSubscribe*) protoFrame)->packet_id = 0x000A; 
+    
 
-    uint8_t * curr = protoFrame + sizeof(uint8_t) + sizeof(uint16_t);
+    uint8_t * curr = protoFrame + 2* sizeof(uint16_t); // skip fixed header and skip packet_id
+    // Write individual topics
     for (int i = 0 ; i < topics_len ; i++)
     {
         uint16_t this_topic_len = strlen(*(topics+i));
         memcpy(curr, &this_topic_len, 2);
         curr = curr + 2;
         memcpy(curr, *(topics+i) , 2);
-        curr = curr + 2 + this_topic_len;
+        curr = curr + this_topic_len; // crashes in this line (sometimes)
         uint8_t QoS = 0x1;
         memcpy(curr, &QoS, 1);
         curr = curr + 1;
+        ((fSubscribe*) protoFrame)->total_size += this_topic_len + 2 + 1; // length of this topic + length bytes + qos
     }
 
 
