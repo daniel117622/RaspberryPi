@@ -1,20 +1,26 @@
-OBJS	= main.o client.o
-SOURCE	= main.cpp client.cpp
-HEADER	= frame_write.hpp
-OUT	= server client
-CC	 = g++
-FLAGS	 = -g -c
-LFLAGS	 = 
+CC = g++
+CFLAGS = -Wall -std=c++11
 
-all: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+SRCDIR = .
+OBJDIR = obj
+BINDIR = bin
 
-main.o: main.cpp
-	$(CC) $(FLAGS) main.cpp 
+MAIN = $(BINDIR)/main.out
+SERVER = $(BINDIR)/server.out
 
-client.o: client.cpp
-	$(CC) $(FLAGS) client.cpp 
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
+all: $(MAIN) $(SERVER)
+
+$(MAIN): $(OBJDIR)/main.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(SERVER): $(OBJDIR)/server.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f $(OBJDIR)/*.o $(MAIN) $(SERVER)
