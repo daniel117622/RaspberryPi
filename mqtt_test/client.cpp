@@ -6,6 +6,7 @@
 
 int main()
 {
+	uint16_t clientID = 0xCAFE;
 	ClientSocket t1(PORT);
 	t1.Connect();	
 	printf("Sending struct. \n");
@@ -39,11 +40,16 @@ int main()
 			printf("Server pinged back...\n\n");
 			char * names[] = {"uno","dos","tres"};
 			char ** topics = names;
-			write_and_send_subscribe_packet(t1,topics,3);	
-			close(t1.sockfd);
+			write_and_send_subscribe_packet(t1,topics,3,clientID);	
 			break;
 		}
-
+		if ((uint8_t)*t1.buffer == 0x0A)
+		{
+			printf("Topic 1 Qos : %hx\n",*(t1.buffer + 4));
+			printf("Topic 2 Qos : %hx\n",*(t1.buffer + 5));
+			printf("Topic 3 Qos : %hx\n",*(t1.buffer + 6));
+			break;
+		}
 		// What to send?
 		// t1.Send(t1.buffer,69);	
 	}

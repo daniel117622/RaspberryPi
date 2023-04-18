@@ -28,10 +28,10 @@ void sendfConnect(fConnect frame, ClientSocket t1)
 
 }
 
-void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t topics_len)
+void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t topics_len,uint16_t clientID)
 {
     // Size of packet identifier + protocol name + lenght + char bytes of each topic up to 3
-    int total_size = 3; // fixed_header + packet_id
+    int total_size = 2; // fixed_header + packet_id
 
     for (int i = 0 ; i < topics_len ; i++)
     {
@@ -41,7 +41,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
     uint8_t * protoFrame = (uint8_t*) malloc(total_size);
     ((fSubscribe*) protoFrame)->fixed_header = 0x82;
     ((fSubscribe*) protoFrame)->total_size = 0x02;
-    ((fSubscribe*) protoFrame)->packet_id = 0x000A; 
+    ((fSubscribe*) protoFrame)->packet_id = clientID; 
     
 
     uint8_t * curr = protoFrame + 2* sizeof(uint16_t); // skip fixed header and skip packet_id
@@ -51,8 +51,8 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
         uint16_t this_topic_len = strlen(*(topics+i));
         memcpy(curr, &this_topic_len, 2);
         curr = curr + 2;
-        memcpy(curr, *(topics+i) , 2);
-        curr = curr + this_topic_len; // crashes in this line (sometimes)
+        memcpy(curr, *(topics+i) , this_topic_len);
+        curr = curr + this_topic_len; 
         uint8_t QoS = 0x1;
         memcpy(curr, &QoS, 1);
         curr = curr + 1;
@@ -68,17 +68,29 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
 
 void validate_and_send_suback(TcpSocket t1)
 {
-    char * sendBuffer = (char*) malloc( 128 );
-
-    uint8_t * curr = (uint8_t*)t1.buffer;
-    curr = curr + 1;
+    char * recBuffer = (char* )malloc( sizeof(t1.buffer) );
+    memcpy(recBuffer, t1.buffer, sizeof(t1.buffer));
+    char * protoFrame = (char*) malloc(4 + 3); // Hardcoded as 3 topics
+    uint16_t sourcePacketId = *((uint16_t*)(recBuffer + 2));
     
-    uint16_t this_topic_len = *((uint16_t*)curr);
-    curr = curr + 2;
-    
-    memcpy(sendBuffer + 1, curr, this_topic_len);
+    char * curr = recBuffer + 4; // Position the ptr on first topic
+    uint8_t numberOfTopics = 0; 
+    for (int i = 0 ; i <= 2 ; i++)
+    {
+        curr += *((uint16_t*)curr)  + 2;
+        uint8_t reqQos =  *curr;
+        if (i <= 1) {curr++;} // Not go out of bounds
+        *(protoFrame + 4 + i) = reqQos;
+    }
+    *protoFrame = 0x0A;
+    *(protoFrame + 1) = 0x05;
 
+    memcpy(protoFrame + 2, &sourcePacketId, 2);
 
+    t1.Send(protoFrame, 3 + 4);
+
+    free(protoFrame);
+    free(recBuffer);
     return;
 }
 
