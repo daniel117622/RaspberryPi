@@ -1,20 +1,32 @@
-OBJS	= main.o client.o
-SOURCE	= main.cpp client.cpp
-HEADER	= frame_write.hpp
-OUT	= server client
-CC	 = g++
-FLAGS	 = -g -c
-LFLAGS	 = 
+CC = g++
+CFLAGS = -Wall -Wextra -Wpedantic -std=c++11
+LDFLAGS = 
 
-all: $(OBJS)
-	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
 
-main.o: main.cpp
-	$(CC) $(FLAGS) main.cpp 
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+DEPS = $(OBJS:%.o=%.d)
 
-client.o: client.cpp
-	$(CC) $(FLAGS) client.cpp 
+TARGET = $(BIN_DIR)/server
 
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.d: $(SRC_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -MM -MT '$(OBJ_DIR)/$(notdir $(<:%.cpp=%.o))' $< -MF $@
+
+-include $(DEPS)
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
