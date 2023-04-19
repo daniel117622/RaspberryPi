@@ -45,6 +45,7 @@ class ClientSocket
     void Send(char * msg, size_t len)
     {
         int res = send(sockfd, msg, len, 0);
+        (void)res; //CAMBIO
     }
 
     void Receive()
@@ -52,6 +53,7 @@ class ClientSocket
         int res = 0;
         bzero(buffer, BUFFERSIZE);
         res = recv(sockfd,buffer,BUFFERSIZE,0);
+        (void)res; //CAMBIO
     }
 
 };

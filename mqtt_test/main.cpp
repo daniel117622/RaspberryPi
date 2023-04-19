@@ -26,9 +26,9 @@ void * worker(void * arg)
     // Validacion.
     uint16_t KA = ((fConnect*)t1.buffer)->bKeepA;
     uint8_t bType = *((uint8_t*)(t1.buffer + sizeof(uint16_t)));
-    int timer = KA;
-
-    pthread_t TID;
+    //int timer = KA; //CAMBIO
+    (void)KA; //CAMBIO
+    //pthread_t TID; //CAMBIO
 
     if (bType == 0x0) // If is a connect packet
     {
@@ -63,8 +63,9 @@ void * worker(void * arg)
         {
             printf("Client disconnected\n");
             break;
-        }
+        } 
     }
+    return 0; //CAMBIO
 }
 
 
