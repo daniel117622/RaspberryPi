@@ -1,10 +1,11 @@
 #include "frame_write.hpp"
-#include <unordered_map>
-#include <vector>
+
 using namespace std;
 #define PORT 64001
 #define MAXCONN 256
 #define DEBUG 1
+
+std::unordered_map<const char *, std::vector<uint16_t>> registers; 
 
 void * timer_func(void * arg)
 {
@@ -51,7 +52,7 @@ void * worker(void * arg)
         }
         else if ( (uint8_t) *t1.buffer == 0x82 ) // Subscribe packet
         {
-            validate_and_send_suback(t1);
+            validate_and_send_suback(t1, &registers);
             printRequestedSubscribe(t1);
         }
         else
@@ -62,16 +63,25 @@ void * worker(void * arg)
     }
 }
 
-std::unordered_map<const char *, std::vector<uint16_t>> registers;
 
 int main() 
 {   
+
+    std::vector<uint16_t> v1; 
+    std::vector<uint16_t> v2; 
+    std::vector<uint16_t> v3; 
+
+    registers["ajedrez"] = v1;
+    registers["poker"] = v2;
+    registers["blackjack"] = v3;
+
+
     while(1)
     {
         TcpSocket tc1 = TcpSocket(PORT);
         TcpSocket tc2 = TcpSocket(PORT);
         pthread_t TID[2];
-        // registers["ajedrez"].push_back(0x6060);
+        
         pthread_create(&TID[0], NULL,  worker, (void*)&tc1);
         pthread_create(&TID[1], NULL,  worker, (void*)&tc2);
 

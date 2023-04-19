@@ -53,6 +53,7 @@ int main()
 			printf("=== Select an action ===\n");
 			printf("1) Ping\n");
 			printf("2) Subscribe to default topics\n");
+			printf("3) Publish to a topic\n");
 			printf("--> ");
 			scanf("%d", &op);
 			if (op == 1)

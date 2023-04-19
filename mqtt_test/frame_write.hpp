@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdint.h>
+#include <unordered_map>
+#include <vector>
 
 #include "server.hpp"
 #include "frame.hpp"
@@ -66,7 +68,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char  topics[3][64], uint8
 
 }
 
-void validate_and_send_suback(TcpSocket t1)
+void validate_and_send_suback(TcpSocket t1, std::unordered_map<const char *, std::vector<uint16_t> >* registers)
 {
     char * recBuffer = (char* )malloc( sizeof(t1.buffer) );
     memcpy(recBuffer, t1.buffer, sizeof(t1.buffer));
@@ -79,14 +81,30 @@ void validate_and_send_suback(TcpSocket t1)
     uint8_t numberOfTopics = 0; 
     for (int i = 0 ; i <= 2 ; i++)
     {
+        char * reqTopic = (char*) malloc(*((uint16_t*)curr) + 1);
+        memcpy(reqTopic,curr+2,*((uint16_t*)curr));
+        reqTopic[*((uint16_t*)curr)] = '\0';
+        const char * constTopic = reqTopic;
+        if (strcmp(reqTopic, "ajedrez") == 0)
+        {
+            (*registers)["ajedrez"].push_back(sourcePacketId); // clientID
+        }
+        else if (strcmp(reqTopic, "poker") == 0)
+        {
+            (*registers)["poker"].push_back(sourcePacketId);
+        }
+        else if (strcmp(reqTopic, "blackjack") == 0)
+        {
+            (*registers)["blackjack"].push_back(sourcePacketId);
+        }
         curr += *((uint16_t*)curr)  + 2;
         uint8_t reqQos =  *curr;
         if (i <= 1) {curr++;} // Not go out of bounds
         *(protoFrame + 4 + i) = reqQos;
+        free(reqTopic);
     }
     *protoFrame = 0x0A;
     *(protoFrame + 1) = 0x05;
-
     memcpy(protoFrame + 2, &sourcePacketId, 2);
 
     t1.Send(protoFrame, 3 + 4);
