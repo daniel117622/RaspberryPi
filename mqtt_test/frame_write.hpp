@@ -28,7 +28,7 @@ void sendfConnect(fConnect frame, ClientSocket t1)
 
 }
 
-void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t topics_len,uint16_t clientID)
+void write_and_send_subscribe_packet(ClientSocket t1, char  topics[3][64], uint8_t topics_len,uint16_t clientID)
 {
     // Size of packet identifier + protocol name + lenght + char bytes of each topic up to 3
     int total_size = 2; // fixed_header + packet_id
@@ -41,7 +41,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char ** topics, uint8_t to
     uint8_t * protoFrame = (uint8_t*) malloc(total_size);
     ((fSubscribe*) protoFrame)->fixed_header = 0x82;
     ((fSubscribe*) protoFrame)->total_size = 0x02;
-    ((fSubscribe*) protoFrame)->packet_id = clientID; 
+    ((fSubscribe*) protoFrame)->packet_id = clientID;   
     
 
     uint8_t * curr = protoFrame + 2* sizeof(uint16_t); // skip fixed header and skip packet_id
@@ -72,7 +72,9 @@ void validate_and_send_suback(TcpSocket t1)
     memcpy(recBuffer, t1.buffer, sizeof(t1.buffer));
     char * protoFrame = (char*) malloc(4 + 3); // Hardcoded as 3 topics
     uint16_t sourcePacketId = *((uint16_t*)(recBuffer + 2));
-    
+    // sourcePacketID should be copied to a global data structure
+
+
     char * curr = recBuffer + 4; // Position the ptr on first topic
     uint8_t numberOfTopics = 0; 
     for (int i = 0 ; i <= 2 ; i++)
@@ -123,4 +125,20 @@ void printConnectFrame(TcpSocket t1)
     printf("Client ID: %s\n", clientId);
     printf("=============================\n");
     free(clientId);
+}
+
+void printRequestedSubscribe(TcpSocket t1)
+{
+    uint8_t * curr = (uint8_t*)(t1.buffer + 4);
+
+    for (int i = 0 ; i<= 2; i++)
+    {
+        uint16_t thisTopicLen = *((uint16_t*)curr);
+        for (int j = 0 ; j <= thisTopicLen ; j++)
+        {
+            printf("%c", *(curr + 2 + j));
+        }
+        curr += 2 + thisTopicLen + 1;
+        printf("\n");
+    }
 }

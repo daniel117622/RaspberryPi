@@ -38,10 +38,6 @@ int main()
 		if ((uint8_t)*t1.buffer == 0xD0)
 		{
 			printf("Server pinged back...\n\n");
-			char * names[] = {"uno","dos","tres"};
-			char ** topics = names;
-			write_and_send_subscribe_packet(t1,topics,3,clientID);	
-			break;
 		}
 		if ((uint8_t)*t1.buffer == 0x0A)
 		{
@@ -51,7 +47,45 @@ int main()
 			break;
 		}
 		// What to send?
-		// t1.Send(t1.buffer,69);	
+		while(1)
+		{
+			int op;
+			printf("=== Select an action ===\n");
+			printf("1) Ping\n");
+			printf("2) Subscribe to default topics\n");
+			printf("--> ");
+			scanf("%d", &op);
+			if (op == 1)
+			{
+				*t1.buffer = 0xC0;
+				*(t1.buffer + 1) = 0x00;	
+				t1.Send(t1.buffer,2);			
+				break;
+			}
+			if (op == 2)
+			{
+				char  names[3][64];
+				char (* topics)[64] = names;
+				
+				for (int i = 0 ; i <= 2 ; i++) 
+				{
+					char temp[64];
+					printf("\nTopic1: ");
+					int n;
+					scanf("%s%n",temp,&n);
+					temp[n] = '\n';
+					strncpy(names[i], temp, 64);
+				}
+
+				write_and_send_subscribe_packet(t1,topics,3,clientID);	// Send is included here
+				break;
+			}
+			else
+			{
+				continue;
+			}
+		}
+
 	}
 
 	return 0;
