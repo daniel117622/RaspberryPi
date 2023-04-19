@@ -1,17 +1,29 @@
 CC = g++
-CFLAGS = -Wall -Wextra -Wpedantic -std=c++11
-LDFLAGS = 
+CFLAGS = -Wall -std=c++11
 
-SRC_DIR = src
-OBJ_DIR = obj
-BIN_DIR = bin
+SRCDIR = .
+OBJDIR = obj
+BINDIR = bin
 
-MAIN_SRC = main.cpp
-CLIENT_SRC = client.cpp
-FRAME_HEADERS = client_handler.hpp frame.hpp frame_write.hpp server.hpp
+MAIN = $(BINDIR)/main
+CLIENT = $(BINDIR)/client
 
-MAIN_OBJ = $(MAIN_SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
-CLIENT_OBJ = $(CLIENT_SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+
+all: $(MAIN) $(CLIENT)
+
+$(CLIENT): $(OBJDIR)/client.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJDIR)/client.o: client.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(MAIN): $(OBJDIR)/main.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJDIR)/main.o: main.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 MAIN_TARGET = $(BIN_DIR)/main
 CLIENT_TARGET = $(BIN_DIR)/client 
@@ -30,4 +42,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(addprefix $(SRC_DIR)/,$(FRAME_HEADERS))
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -f $(OBJDIR)/*.o $(MAIN) $(CLIENT)

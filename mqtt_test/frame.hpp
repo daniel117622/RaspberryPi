@@ -29,6 +29,7 @@ typedef struct{
 
 typedef struct{
     uint8_t fixed_header;
+    uint8_t total_size;
     uint16_t packet_id;
     uint16_t bLenA;
 }fSubscribe;
