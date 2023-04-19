@@ -81,6 +81,11 @@ int main()
 				write_and_send_subscribe_packet(t1,topics,3,clientID);	// Send is included here
 				break;
 			}
+			if (op == 3)
+			{
+				sendPublishFrame(t1,"ajedrez","libros en venta");
+				break;
+			}
 			else
 			{
 				continue;

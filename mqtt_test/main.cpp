@@ -55,6 +55,10 @@ void * worker(void * arg)
             validate_and_send_suback(t1, &registers);
             printRequestedSubscribe(t1);
         }
+        else if ( (uint8_t) *t1.buffer == 0x30 ) // Publish packet
+        {
+            validate_and_send_puback(t1,&registers);
+        }
         else
         {
             printf("Client disconnected\n");

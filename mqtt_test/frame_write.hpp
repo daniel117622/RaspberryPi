@@ -160,3 +160,72 @@ void printRequestedSubscribe(TcpSocket t1)
         printf("\n");
     }
 }
+
+void sendPublishFrame(ClientSocket t1, char * topic, char * msg)
+{
+    size_t totalLength = 6 + strlen(topic) + strlen(msg); // size of fixed header, variable header and pid + payload
+    char * protoFrame = (char*) malloc(totalLength);
+
+    *protoFrame = 0x30;
+    *(protoFrame + 1) = (uint8_t)(totalLength - 2); // Remaining length
+
+    *(protoFrame + 2) = (uint16_t) strlen(topic);
+    memcpy(protoFrame + 4, topic, strlen(topic));
+    uint16_t  msgID = 0xCAFE;
+    memcpy(protoFrame + 4 + strlen(topic), &msgID , 2);
+    memcpy(protoFrame + 4 + strlen(topic) + 2 , msg, strlen(msg));
+
+    t1.Send(protoFrame, totalLength);
+    free(protoFrame);
+    return;
+}
+
+
+void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std::vector<uint16_t> >* registers)
+{
+    // Parse the frame. Look at the subscribed clients for that topic and msg the clients subscribed to it.
+    uint16_t sizeofTopic = *((uint16_t*)(t1.buffer + 2));
+    char * reqTopic = (char *) malloc( sizeofTopic );
+    memcpy(reqTopic, t1.buffer + 4 , sizeofTopic);
+
+    printf("=============\n");
+    for (int i = 0 ; i < sizeofTopic ; i++)
+    {
+        printf("%c", *(reqTopic + i));
+    }
+    printf("\n");
+
+    uint8_t sizeofMsg = (*(t1.buffer + 1) + 2) - 2 - sizeofTopic - 1;
+    char * reqMsg = (char *) malloc( sizeofMsg );
+    memcpy(reqMsg, t1.buffer + 4  + sizeofTopic + 1, sizeofMsg);
+    
+    uint32_t pubAck = 0x5002CAFE; //  MQTT CONTROL and PacketID 
+    t1.Send((char*)&pubAck, sizeof(uint32_t));
+
+    for (int i = 0 ; i < sizeofMsg ; i++)
+    {
+        printf("%c", *(reqMsg + i));
+    }
+    printf("\n");
+    printf("=============\n");
+
+    if ( strcmp(reqTopic , "ajedrez") == 0 )
+    {
+        
+    }
+    if ( strcmp(reqTopic , "poker") == 0 )
+    {
+
+    }
+    if ( strcmp(reqTopic , "blackjack") == 0 )
+    {
+        
+    }
+    else
+    {
+        printf("Topic currently not available. \n");
+    }
+
+    free(reqMsg);
+    free(reqTopic);
+}
