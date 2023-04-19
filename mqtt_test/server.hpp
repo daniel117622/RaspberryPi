@@ -74,13 +74,14 @@ public:
     void Send(char *msg, int len)
     {
         int res = send(sockfd, msg, len, 0);
-
+        (void)res; //CAMBIO
     }
 
     void Receive()
     {
         bzero(buffer, BUFFSIZE);
         int res = recv(sockfd,buffer,BUFFSIZE,0);
+        (void)res; //CAMBIO
     }
 
 };

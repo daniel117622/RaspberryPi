@@ -25,21 +25,6 @@ $(MAIN): $(OBJDIR)/main.o
 $(OBJDIR)/main.o: main.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-MAIN_TARGET = $(BIN_DIR)/main
-CLIENT_TARGET = $(BIN_DIR)/client 
-
-.PHONY: all clean
-
-all: $(MAIN_TARGET) $(CLIENT_TARGET)
-
-$(MAIN_TARGET): $(MAIN_OBJ)
-	$(CC) $(LDFLAGS) $^ -o $@
-
-$(CLIENT_TARGET): $(CLIENT_OBJ)
-	$(CC) $(LDFLAGS) $^ -o $@
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(addprefix $(SRC_DIR)/,$(FRAME_HEADERS))
-	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJDIR)/*.o $(MAIN) $(CLIENT)

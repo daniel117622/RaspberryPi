@@ -78,13 +78,13 @@ void validate_and_send_suback(TcpSocket t1, std::unordered_map<const char *, std
 
 
     char * curr = recBuffer + 4; // Position the ptr on first topic
-    uint8_t numberOfTopics = 0; 
+    //uint8_t numberOfTopics = 0; //CAMBIO
     for (int i = 0 ; i <= 2 ; i++)
     {
         char * reqTopic = (char*) malloc(*((uint16_t*)curr) + 1);
         memcpy(reqTopic,curr+2,*((uint16_t*)curr));
         reqTopic[*((uint16_t*)curr)] = '\0';
-        const char * constTopic = reqTopic;
+        //const char * constTopic = reqTopic; //CAMBIO
         if (strcmp(reqTopic, "ajedrez") == 0)
         {
             (*registers)["ajedrez"].push_back(sourcePacketId); // clientID
