@@ -60,7 +60,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char  topics[3][64], uint8
     }
 
 
-    t1.Send((char*) protoFrame, total_size);
+    t1.Send((char*) protoFrame, total_size + 2) ; // 2 corresponds to the fixed header 
     printf("Sent subscribe packet\n");
     free(protoFrame);
 
