@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <unordered_map>
 #include <vector>
+#include <cstring>
 
 #include "server.hpp"
 #include "frame.hpp"
@@ -68,7 +69,7 @@ void write_and_send_subscribe_packet(ClientSocket t1, char  topics[3][64], uint8
 
 }
 
-void validate_and_send_suback(TcpSocket t1, std::unordered_map<const char *, std::vector<uint16_t> >* registers)
+void validate_and_send_suback(TcpSocket t1, std::unordered_map<const char *, std::string >* registers)
 {
     char * recBuffer = (char* )malloc( sizeof(t1.buffer) );
     memcpy(recBuffer, t1.buffer, sizeof(t1.buffer));
@@ -161,7 +162,7 @@ void printRequestedSubscribe(TcpSocket t1)
     }
 }
 
-void sendPublishFrame(ClientSocket t1, char * topic, char * msg)
+void sendPublishFrame(ClientSocket t1, const char * topic, const char * msg)
 {
     size_t totalLength = 6 + strlen(topic) + strlen(msg); // size of fixed header, variable header and pid + payload
     char * protoFrame = (char*) malloc(totalLength);
@@ -180,13 +181,42 @@ void sendPublishFrame(ClientSocket t1, char * topic, char * msg)
     return;
 }
 
+void sendPublishToClient(TcpSocket t1,std::string topic,std::string sendMsg)
+{
+    size_t totalLength = 6 + topic.length() + sendMsg.length(); // size of fixed header, variable header and pid + payload
+    char * protoFrame = (char*) malloc(totalLength);
 
-void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std::vector<uint16_t> >* registers)
+    *protoFrame = 0x30;
+    *(protoFrame + 1) = (uint8_t)(totalLength - 2); // Remaining length
+
+    char * topic_c = (char *) malloc (topic.length()+1);
+    std::strcpy(topic_c, topic.c_str());
+
+    char * sendMsg_c = (char *) malloc (sendMsg.length()+1);
+    std::strcpy(sendMsg_c, sendMsg.c_str());
+
+    *(protoFrame + 2) = (uint16_t) strlen(sendMsg_c);
+    memcpy(protoFrame + 4, topic_c, strlen(topic_c));
+    uint16_t msgID = 0xCAFE;
+    memcpy(protoFrame + 4 + strlen(topic_c), &msgID, 2);
+    memcpy(protoFrame + 4 + strlen(topic_c) + 2, sendMsg_c, strlen(sendMsg_c));
+
+    t1.Send(protoFrame, totalLength);
+
+    free(topic_c);
+    free(sendMsg_c);
+    free(protoFrame);
+    return;
+}
+
+
+void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std::string >* registers)
 {
     // Parse the frame. Look at the subscribed clients for that topic and msg the clients subscribed to it.
     uint16_t sizeofTopic = *((uint16_t*)(t1.buffer + 2));
-    char * reqTopic = (char *) malloc( sizeofTopic );
+    char * reqTopic = (char *) malloc( sizeofTopic + 1 );
     memcpy(reqTopic, t1.buffer + 4 , sizeofTopic);
+    reqTopic[sizeofTopic] = 0;
 
     printf("=============\n");
     for (int i = 0 ; i < sizeofTopic ; i++)
@@ -194,10 +224,10 @@ void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std
         printf("%c", *(reqTopic + i));
     }
     printf("\n");
-
+    printf("=============\n");
     uint8_t sizeofMsg = (*(t1.buffer + 1) + 2) - 2 - sizeofTopic - 1;
     char * reqMsg = (char *) malloc( sizeofMsg );
-    memcpy(reqMsg, t1.buffer + 4  + sizeofTopic + 1, sizeofMsg);
+    memcpy(reqMsg, t1.buffer + 4  + sizeofTopic + 2, sizeofMsg);
     
     uint32_t pubAck = 0x5002CAFE; //  MQTT CONTROL and PacketID 
     t1.Send((char*)&pubAck, sizeof(uint32_t));
@@ -211,15 +241,15 @@ void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std
 
     if ( strcmp(reqTopic , "ajedrez") == 0 )
     {
-        
+        (*registers)["ajedrez"] = std::string(reqMsg);
     }
     if ( strcmp(reqTopic , "poker") == 0 )
     {
-
+        (*registers)["poker"] = std::string(reqMsg);
     }
     if ( strcmp(reqTopic , "blackjack") == 0 )
     {
-        
+        (*registers)["blackjack"] = std::string(reqMsg);
     }
     else
     {
@@ -229,3 +259,4 @@ void validate_and_send_puback(TcpSocket t1, std::unordered_map<const char *, std
     free(reqMsg);
     free(reqTopic);
 }
+

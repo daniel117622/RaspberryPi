@@ -5,29 +5,54 @@ using namespace std;
 #define MAXCONN 256
 #define DEBUG 1
 
-std::unordered_map<const char *, std::vector<uint16_t>> registers; 
+std::unordered_map<const char *, std::string> registers; 
+std::pair<pthread_t,int> timeAdmin[3];
 
-void * timer_func(void * arg)
+void * launchTimeManagment( void * arg )
 {
-    return NULL;
+    std::pair<pthread_t, int>* timeAdmin = (std::pair<pthread_t, int>*)arg;
+    while(1)
+    {
+        for ( int i = 0 ; i <= 1 ; i++ )
+        {
+            if ( timeAdmin[i].second != -1 ) // Time is different from "null"
+            {
+                timeAdmin[i].second += -1; //substract one second
+            }
+        }
+        for ( int i = 0 ; i <=  1 ; i++)
+        {
+            if ( timeAdmin[i].second == 0 )
+            {
+                // Nothing happens but the parent thread (worker) kills itself
+            }
+        }
+        sleep(1);
+        }
+
 }
 
 void * worker(void * arg)
 
-
-
-
 {
-    TcpSocket t1 = *((TcpSocket*)arg);
+    std::pair<TcpSocket*, uint32_t>* arg_tmp = (std::pair<TcpSocket*, uint32_t>*)arg;
+
+    TcpSocket t1 = *(arg_tmp->first);
+    uint32_t myTimeSlot = arg_tmp->second;
     t1.Listen();
     t1.Accept();
     t1.Receive();
     printConnectFrame(t1);        
     // Validacion.
     uint16_t KA = ((fConnect*)t1.buffer)->bKeepA;
+    timeAdmin[myTimeSlot].second = KA;
+
+    pthread_t TID;
+    pthread_create(&TID, NULL,  launchTimeManagment, (void*)timeAdmin);
+
     uint8_t bType = *((uint8_t*)(t1.buffer + sizeof(uint16_t)));
     //int timer = KA; //CAMBIO
-    (void)KA; //CAMBIO
+    
     //pthread_t TID; //CAMBIO
 
     if (bType == 0x0) // If is a connect packet
@@ -44,6 +69,14 @@ void * worker(void * arg)
     while(1)
     {
         t1.Receive();
+
+        if (timeAdmin[myTimeSlot].second <= 0) 
+        {
+            close(t1.sockfd);
+            printf("Idle client. Disconnected.\n");
+            return 0;
+        }
+
         if ( (uint8_t)*t1.buffer == 0xC0 ) // PING REQUEST
         {
             *t1.buffer = 0xD0;
@@ -65,30 +98,35 @@ void * worker(void * arg)
             break;
         } 
     }
-    return 0; //CAMBIO
+    return 0;
 }
+
 
 
 int main() 
 {   
 
-    std::vector<uint16_t> v1; 
-    std::vector<uint16_t> v2; 
-    std::vector<uint16_t> v3; 
-
-    registers["ajedrez"] = v1;
-    registers["poker"] = v2;
-    registers["blackjack"] = v3;
+    registers["ajedrez"] = std::string("");
+    registers["poker"] = std::string("");
+    registers["blackjack"] = std::string("");
 
 
     while(1)
     {
         TcpSocket tc1 = TcpSocket(PORT);
+        std::pair<TcpSocket*, uint32_t> conninfo1 = { &tc1, 0 };
         TcpSocket tc2 = TcpSocket(PORT);
+        std::pair<TcpSocket*, uint32_t> conninfo2 = { &tc2, 1 };
         pthread_t TID[2];
         
-        pthread_create(&TID[0], NULL,  worker, (void*)&tc1);
-        pthread_create(&TID[1], NULL,  worker, (void*)&tc2);
+        timeAdmin[0].first = TID[0];
+        timeAdmin[0].second = -1; 
+        pthread_create(&TID[0], NULL,  worker, (void*)&conninfo1);
+        timeAdmin[1].first = TID[1];
+        timeAdmin[1].second = -1; 
+        pthread_create(&TID[1], NULL,  worker, (void*)&conninfo2);
+
+        
 
         pthread_join(TID[0],NULL);
         pthread_join(TID[1],NULL);        

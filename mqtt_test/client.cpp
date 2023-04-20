@@ -35,16 +35,15 @@ int main()
 	{
 		t1.Receive();
 
-		if ((uint8_t)*t1.buffer == 0xD0)
+		if ((uint8_t)*t1.buffer == 0xD0) // Process ping
 		{
 			printf("Server pinged back...\n\n");
 		}
-		if ((uint8_t)*t1.buffer == 0x0A)
+		if ((uint8_t)*t1.buffer == 0x0A) // Processing puback
 		{
 			printf("Topic 1 Qos : %hx\n",*(t1.buffer + 4));
 			printf("Topic 2 Qos : %hx\n",*(t1.buffer + 5));
 			printf("Topic 3 Qos : %hx\n",*(t1.buffer + 6));
-			break;
 		}
 		// What to send?
 		while(1)
@@ -88,7 +87,7 @@ int main()
 			}
 			else
 			{
-				continue;
+				continue;;
 			}
 		}
 
